@@ -21,7 +21,7 @@ jobs:
   check-xray-server-connectivity:
     uses: ./.github/workflows/xray-connectivity-check.yaml
     secrets:
-      XRAY_HOST: ${{ secrets.DOMAIN_NAME }}
+      XRAY_HOST: ${{ secrets.XRAY_HOST }}
       XRAY_PATH: ${{ secrets.XRAY_PATH }}
       XRAY_UUID: ${{ secrets.XRAY_UUID }}
       XRAY_ENCRYPTION_KEY: ${{ secrets.XRAY_ENCRYPTION_KEY }}
