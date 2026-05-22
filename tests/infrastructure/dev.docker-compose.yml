@@ -1,0 +1,22 @@
+services:
+  xray-warp-ct-test-container:
+    image: xia1997x/xray-warp-staging:staging
+    container_name: xray-warp-ct-test-container
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - DOMAIN_NAME: ${DOMAIN_NAME}
+      - XRAY_PATH: ${XRAY_PATH}
+      - XRAY_UUID: ${XRAY_UUID}
+      - CLOUDFLARE_AUTH_TOKEN: ${CLOUDFLARE_AUTH_TOKEN}
+      - XRAY_ENCRYPTION_KEY: ${XRAY_ENCRYPTION_KEY}
+      - XRAY_DECRYPTION_KEY: ${XRAY_DECRYPTION_KEY}
+      - XRAY_VERSION: latest
+      - ENABLE_CADDY_LOG: False
+      - ENABLE_WARP: True
+      - PORT: 443
+    ports:
+      - "8443:443"
