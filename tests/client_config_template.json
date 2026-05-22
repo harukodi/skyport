@@ -31,7 +31,7 @@
                 "vnext": [
                     {
                         "address": "${HOST}",
-                        "port": 443,
+                        "port": 8443,
                         "users": [
                             {
                                 "id": "${UUID}",
