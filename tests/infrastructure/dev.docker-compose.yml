@@ -17,6 +17,6 @@ services:
       - XRAY_VERSION: latest
       - ENABLE_CADDY_LOG: False
       - ENABLE_WARP: True
-      - PORT: 443
+      - PORT: 8443
     ports:
       - "8443:443"
