@@ -85,4 +85,4 @@ function main () {
     echo "❌ Timeout reached: Xray server did not respond in time. Test failed."
     exit 1
 }
-main 110
+main 50

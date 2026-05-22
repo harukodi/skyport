@@ -2,28 +2,21 @@ name: xray connecitvity test
 
 on:
   workflow_call:
-    inputs:
-      TESTS_DIRECTORY:
-        required: True
-        type: string
-      XRAY_PATH:
-        required: True
-        type: string
-      XRAY_UUID:
-        required: true
-        type: string
-      XRAY_ENCRYPTION_KEY:
-        required: true
-        type: string
     secrets:
       XRAY_HOST:
+        required: True
+      XRAY_PATH:
+        required: True
+      XRAY_UUID:
+        required: True
+      XRAY_ENCRYPTION_KEY:
         required: True
 
 env:
   XRAY_HOST: ${{ secrets.XRAY_HOST }}
-  XRAY_PATH: ${{ inputs.XRAY_PATH }}
-  XRAY_UUID: ${{ inputs.XRAY_UUID }}
-  XRAY_ENCRYPTION_KEY: ${{ inputs.XRAY_ENCRYPTION_KEY }}
+  XRAY_PATH: ${{ secrets.XRAY_PATH }}
+  XRAY_UUID: ${{ secrets.XRAY_UUID }}
+  XRAY_ENCRYPTION_KEY: ${{ secrets.XRAY_ENCRYPTION_KEY }}
 
 jobs:
   xray-warp-ct-connecivity-check:
@@ -33,4 +26,4 @@ jobs:
         uses: actions/checkout@v3
       - name: Start xray-warp-ct connectivity check
         run: |
-          ./${{ inputs.TESTS_DIRECTORY }}/client_server_test.sh
+          ./tests/client_server_test.sh
