@@ -20,3 +20,5 @@ services:
       - PORT=8443
     ports:
       - "8443:443"
+    volumes:
+      - xray-warp-ct-staging-certs-volume:/xray_base/caddy_certs/caddy
