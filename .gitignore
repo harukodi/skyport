@@ -128,7 +128,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
+.nicegui
+.nicegui/
 # Spyder project settings
 .spyderproject
 .spyproject
