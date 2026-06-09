@@ -161,7 +161,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# Config files used for testing
+# Config files/backend
 app/caddy_config/*
 !app/caddy_config/.gitkeep
 app/xray_config/*
@@ -172,3 +172,7 @@ tests/infrastructure/xray_server_config/config/
 .terraform
 .terraform.*
 .public.env
+
+# Frontend files
+frontend/assets/xray_data/*
+!frontend/assets/xray_data/.gitkeep
