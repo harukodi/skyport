@@ -13,7 +13,7 @@ warp_manager = Warp()
 files_to_check = [
     "./xray_config/xray_config.json",
     "./xray_config/xray_client_qr_code.png",
-    "./xray_config/vless_link.txt"
+    "./xray_config/xray_client_vless_link.json"
 ]
 
 def initialize():

@@ -1,4 +1,4 @@
-import subprocess, segno
+import subprocess, segno, json
 from vars import xray_uuid, xray_path, xray_encryption_key, xray_decryption_key, domain_name, port
 from string import Template
 from pathlib import Path
@@ -10,7 +10,7 @@ class XrayConfig:
         self.xray_config_template = self.base_dir / "templates" / "xray_config_template.json"
         self.xray_config_file = self.base_dir / "xray_config" / "xray_config.json"
         self.xray_qr_code_file = self.base_dir / "xray_config" / "xray_client_qr_code.png"
-        self.xray_vless_link_file = self.base_dir / "xray_config" / "vless_link.txt"
+        self.xray_vless_link_file = self.base_dir / "xray_config" / "xray_client_vless_link.json"
         self.xray_binary_path = self.base_dir / "xray_config" / "xray_core"
         self.xray_uuid = xray_uuid
         self.xray_path = xray_path
@@ -63,4 +63,7 @@ class XrayConfig:
         qr_code.save(self.xray_qr_code_file, scale=8)
         
         with open(self.xray_vless_link_file, 'w') as vless_link_file:
-            vless_link_file.write(vless_uri)
+            vless_link_data = {
+                "xray_client_vless_link": vless_uri
+            }
+            json.dump(vless_link_data, vless_link_file, indent=4)
