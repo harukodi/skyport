@@ -5,19 +5,34 @@ from classes.DashboardPage import DashboardPage
 from classes.Auth import Auth
 from classes.AuthMiddleware import AuthMiddleware
 from classes.NotFoundPage import NotFoundPage
+from classes.XrayConfigLoader import XrayConfigLoader
 from dotenv import load_dotenv
 
-app_title = "Skyport"
-login_page = LoginPage(on_login=Auth.verify_login, title=app_title, redirect_to="/dashboard")
-login_page.build()
-dashboard_page = DashboardPage()
-dashboard_page.build()
-not_found_page = NotFoundPage()
-not_found_page.build()
+class AppBootstrap():
+    def __init__(self, title: str):
+        self.title = title
+    
+    def build_pages(self):
+        LoginPage(on_login=Auth.verify_login, title=self.title, redirect_to="/dashboard").build()
+        DashboardPage().build()
+        NotFoundPage().build()
+
+    def init_services(self):
+        XrayConfigLoader.init()
+        Auth.init()
+        AuthMiddleware.register()
+        app.add_static_files("/assets", "assets")
+    
+    def run(self):
+        ui.run(
+            storage_secret=secrets.token_hex(32),
+            title=self.title
+        )
 
 if __name__ in {"__main__", "__mp_main__"}:
     load_dotenv(override=True)
-    Auth.init()
-    AuthMiddleware.register()
-    app.add_static_files("/assets", "assets")
-    ui.run(storage_secret=secrets.token_hex(32), title=app_title)
+    app_ui = AppBootstrap(title="Skyport")
+
+    app_ui.init_services()
+    app_ui.build_pages()
+    app_ui.run()

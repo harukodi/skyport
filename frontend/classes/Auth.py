@@ -10,13 +10,16 @@ class Auth:
     @classmethod
     def init(cls) -> None:
         try:
-            username = environ.pop("SKYPORT_USERNAME")
-            password = environ.pop("SKYPORT_PASSWORD")
-        except KeyError:
-            raise RuntimeError("USERNAME OR PASSWORD ENV IS NOT SET!")
+            username = environ.get("SKYPORT_USERNAME")
+            password = environ.get("SKYPORT_PASSWORD")
+        except KeyError as e:
+            missing_key = e.args[0]
+            raise RuntimeError(f"Environment variable {missing_key} is not set!")
         
+        if not username.strip():
+            raise ValueError("Username cannot be empty or whitespace only!")
         if len(password) < 16:
-            raise ValueError("Password must be at least 5 characters long")
+            raise ValueError("Password must be at least 16 characters long!")
         
         cls._username = username
         cls._password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
