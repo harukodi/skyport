@@ -174,5 +174,5 @@ tests/infrastructure/xray_server_config/config/
 .public.env
 
 # Frontend files
-frontend/assets/xray_data/*
-!frontend/assets/xray_data/.gitkeep
+src/frontend/assets/xray_data/*
+!src/frontend/assets/xray_data/.gitkeep

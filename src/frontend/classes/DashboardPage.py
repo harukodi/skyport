@@ -2,6 +2,7 @@ from nicegui import ui
 from classes.Auth import Auth
 from datetime import datetime
 from classes.XrayConfigLoader import XrayConfigLoader
+from shared.Warp import Warp, WarpStatus
 
 STARTED = datetime(2026, 5, 12, 0, 0, 0)
 CARD_STYLE = "background-color: #252523; border-radius: 16px;"
@@ -9,6 +10,7 @@ BG_COLOR = "#1a1a18"
 ORANGE = "#ff5722"
 TEXT = "#f4f1ed"
 MUTED = "#888780"
+warp_manager = Warp()
 
 class DashboardPage:
     def build(self) -> None:
@@ -47,18 +49,21 @@ class DashboardPage:
                             f"font-size: 12px; font-weight: 750; letter-spacing: 0.08em; color: {ORANGE}"
                         )
 
+                    warp_state = warp_manager.status()
                     with ui.row().classes("w-full items-center justify-between"):
-                        warp_status = ui.label("Connected").style(
-                            f"font-size: 18px; font-weight: 500; color: {TEXT}"
+                        warp_status = ui.label(warp_state.value).style(
+                            f"font-size: 18px; font-weight: 500; color: {TEXT if warp_state == WarpStatus.CONNECTED else MUTED}"
                         )
-                        warp_switch = ui.switch("", value=False).props("color=deep-orange")
+                        warp_switch = ui.switch("", value=True if warp_state == WarpStatus.CONNECTED else False).props("color=deep-orange")
 
                     def on_warp_toggle(e):
                         if e.value:
-                            warp_status.set_text("Connected")
+                            warp_manager.connect()
+                            warp_status.set_text(WarpStatus.CONNECTED.value)
                             warp_status.style(f"font-size: 18px; font-weight: 500; color: {TEXT}")
                         else:
-                            warp_status.set_text("Disconnected")
+                            warp_manager.disconnect()
+                            warp_status.set_text(WarpStatus.DISCONNECTED.value)
                             warp_status.style(f"font-size: 18px; font-weight: 500; color: {MUTED}")
 
                     warp_switch.on_value_change(on_warp_toggle)

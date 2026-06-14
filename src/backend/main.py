@@ -5,7 +5,7 @@ from setup_xray_core import setup_xray_core
 from generate_caddy_config import generate_caddy_config
 from classes.Services import Services
 from classes.XrayConfig import XrayConfig
-from classes.Warp import Warp
+from shared.warp import Warp
 
 service_manager = Services()
 xray_config_manager = XrayConfig()
@@ -17,12 +17,12 @@ files_to_check = [
 ]
 
 def initialize():
-    #setup_dns_record()
-    #setup_xray_core()
-    #warp_manager.enable_warp_tunnel()
-    #xray_config_manager.generate_xray_config()
+    setup_dns_record()
+    setup_xray_core()
+    warp_manager.enable_warp_tunnel()
+    xray_config_manager.generate_xray_config()
     xray_config_manager.generate_xray_qr_code_and_vless_link()
-    #generate_caddy_config()
+    generate_caddy_config()
 
 def exit_function():
     def on_exit():
@@ -43,8 +43,9 @@ def main():
         setup_xray_core()
         warp_manager.enable_warp_tunnel()
     
-    #service_manager.start_services()
-    #exit_function()
+    service_manager.start_services()
+    exit_function()
 
 if __name__ == "__main__":
-    main()
+    #main()
+    print(warp_manager.status())

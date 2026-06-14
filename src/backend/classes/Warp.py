@@ -1,10 +1,11 @@
 import pty, subprocess, sys, os, pty
-from vars import enable_warp
+from enum import Enum
+
+class WarpStatus(Enum):
+    CONNECTED = "Connected"
+    DISCONNECTED = "Disconnected"
 
 class Warp:
-    def __init__(self):
-        self.enable_warp = enable_warp
-    
     def _register(self):
         master, slave = pty.openpty()
         register_warp_result = subprocess.Popen(
@@ -33,7 +34,7 @@ class Warp:
         if set_warp_mode_result.returncode == 0:
             print(f"Warp mode set to proxy")
 
-    def _connect(self):
+    def connect(self):
         connect_warp_result = subprocess.run(
             ["warp-cli", "connect"],
             stdout=subprocess.DEVNULL,
@@ -44,19 +45,16 @@ class Warp:
             print("Warp connection failed!")
             sys.exit(1)
             
-    def enable_warp_tunnel(self):
-        if self.enable_warp.lower() == "false":
+    def enable_warp_tunnel(self, enable_warp: bool):
+        if not enable_warp:
             print("Warp is disabled. Skipping Warp connection.")
             return
         
         self._register()
         self._set_mode()
-        self._connect()
+        self.connect()
         
     def disconnect(self):
-        if self.enable_warp.lower() == "false":
-            return
-        
         disconnect_warp_result = subprocess.run(
             ["warp-cli", "disconnect"],
             stdout=subprocess.DEVNULL,
@@ -66,10 +64,17 @@ class Warp:
         if disconnect_warp_result.returncode == 0:
             print("Warp disconnected successfully!")
 
+    def status(self):
+        status_warp_result = subprocess.run(
+            ["warp-cli", "status"],
+            capture_output=True,
+            text=True
+        )
+        if WarpStatus.CONNECTED.value in status_warp_result.stdout:
+            return WarpStatus.CONNECTED
+        return WarpStatus.DISCONNECTED
+
     def unregister(self):
-        if self.enable_warp.lower() == "false":
-            return
-        
         unregister_warp_result = subprocess.run(
             ["warp-cli", "registration", "delete"],
             stdout=subprocess.DEVNULL,

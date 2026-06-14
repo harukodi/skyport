@@ -10,8 +10,8 @@ class Auth:
     @classmethod
     def init(cls) -> None:
         try:
-            username = environ.get("SKYPORT_USERNAME")
-            password = environ.get("SKYPORT_PASSWORD")
+            username = environ["SKYPORT_USERNAME"]
+            password = environ["SKYPORT_PASSWORD"]
         except KeyError as e:
             missing_key = e.args[0]
             raise RuntimeError(f"Environment variable {missing_key} is not set!")
