@@ -2,7 +2,7 @@ from nicegui import ui
 from classes.Auth import Auth
 from datetime import datetime
 from classes.XrayConfigLoader import XrayConfigLoader
-from shared.Warp import Warp, WarpStatus
+from shared.warp import Warp, WarpStatus
 
 STARTED = datetime(2026, 5, 12, 0, 0, 0)
 CARD_STYLE = "background-color: #252523; border-radius: 16px;"
@@ -10,13 +10,13 @@ BG_COLOR = "#1a1a18"
 ORANGE = "#ff5722"
 TEXT = "#f4f1ed"
 MUTED = "#888780"
-warp_manager = Warp()
 
 class DashboardPage:
     def build(self) -> None:
         self.xray_client_qr_code_path = XrayConfigLoader.get_xray_qrcode_path()
         self.xray_client_vless_link = XrayConfigLoader.get_xray_vless_link()
-        
+        self.warp_manager = Warp()
+
         @ui.page("/dashboard")
         def dashboard():
             # Header and bg
@@ -49,7 +49,7 @@ class DashboardPage:
                             f"font-size: 12px; font-weight: 750; letter-spacing: 0.08em; color: {ORANGE}"
                         )
 
-                    warp_state = warp_manager.status()
+                    warp_state = self.warp_manager.status()
                     with ui.row().classes("w-full items-center justify-between"):
                         warp_status = ui.label(warp_state.value).style(
                             f"font-size: 18px; font-weight: 500; color: {TEXT if warp_state == WarpStatus.CONNECTED else MUTED}"
@@ -58,11 +58,11 @@ class DashboardPage:
 
                     def on_warp_toggle(e):
                         if e.value:
-                            warp_manager.connect()
+                            self.warp_manager.connect()
                             warp_status.set_text(WarpStatus.CONNECTED.value)
                             warp_status.style(f"font-size: 18px; font-weight: 500; color: {TEXT}")
                         else:
-                            warp_manager.disconnect()
+                            self.warp_manager.disconnect()
                             warp_status.set_text(WarpStatus.DISCONNECTED.value)
                             warp_status.style(f"font-size: 18px; font-weight: 500; color: {MUTED}")
 

@@ -18,8 +18,8 @@ class AppBootstrap():
         NotFoundPage().build()
 
     def init_services(self):
-        XrayConfigLoader.init()
         Auth.init()
+        XrayConfigLoader.init()
         AuthMiddleware.register()
         app.add_static_files("/assets", "assets")
     

@@ -4,8 +4,8 @@ from pathlib import Path
 class XrayConfigLoader:
     base_dir = Path(__file__).parent.parent.parent
     dst_dir = Path(__file__).parent.parent / "assets" / "xray_data"
-    xray_qr_code_file = base_dir / "app" / "xray_config" / "xray_client_qr_code.png"
-    xray_vless_link_file = base_dir / "app" / "xray_config" / "xray_client_vless_link.json"
+    xray_qr_code_file = base_dir / "backend" / "xray_config" / "xray_client_qr_code.png"
+    xray_vless_link_file = base_dir / "backend" / "xray_config" / "xray_client_vless_link.json"
 
     @classmethod
     def init(cls) -> None:
