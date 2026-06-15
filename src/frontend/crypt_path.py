@@ -24,18 +24,42 @@ PATH_WORDS = [
     "opal", "piper", "yon", "sonya", "moma", "jay", "milya", "molly",
 ]
 
-def generate_path() -> str:
-    def _generate_salt(length: int, only_letters: bool = False, only_numbers: bool = False):
-        if only_letters:
-            ascii_table = string.ascii_letters
-        elif only_numbers:
-            ascii_table = string.digits
-        else:
-            ascii_table = string.ascii_letters + string.digits
+PATH_VERBS = [
+    "runs", "leaps", "flies", "dives", "hunts", "rests", "hides", "waits",
+    "calls", "swims", "climbs", "drifts", "glides", "roams", "stalks",
+    "turns", "walks", "peers", "howls", "soars", "sniffs", "pads", "trots",
+    "coils", "nests", "perches", "darts", "bolts", "lurks", "prowls",
+    "wades", "barks", "chirps", "hoots", "yowls", "growls", "hisses",
+    "gnaws", "burrows", "circles", "springs", "sprints", "slinks", "creeps",
+    "pounces", "scurries", "gallops", "charges", "grazes", "scratches",
+    "shrieks", "whistles", "stomps", "shuffles", "slithers", "scampers",
+    "bounds", "swoops", "plunges", "thrashes", "scuttles", "wanders",
+    "forages", "lingers",
+]
 
-        salt = ''.join(secrets.choice(ascii_table) for i in range(length)).lower()
-        return salt
-    words = "-".join(secrets.choice(PATH_WORDS) for _ in range(3))
-    return f"{words}-{_generate_salt(4, only_letters=True)}-{_generate_salt(4, only_numbers=True)}"
+PATH_ADJECTIVES = [
+    "swift", "silent", "golden", "silver", "ancient", "hidden", "frozen",
+    "wild", "dark", "bright", "hollow", "iron", "noble", "pale", "bold",
+    "calm", "deep", "fair", "glad", "high", "keen", "lean", "mild",
+    "neat", "pure", "rare", "safe", "tame", "vast", "warm", "wise",
+    "cold", "damp", "fine", "hard", "kind", "loud", "nice", "rich",
+    "slow", "tall", "wavy", "cozy", "dull", "epic", "flat", "good",
+    "hazy", "icy", "jolly", "lush", "misty", "muddy", "rocky", "sandy",
+    "shady", "sharp", "sleek", "slim", "sly", "soft", "stout", "stray",
+    "sunny", "thick", "thin", "tiny", "tough", "true", "vague", "young",
+    "azure", "beige", "blunt", "brash", "brave", "brisk", "broad", "brown",
+]
+
+
+def generate_path() -> str:
+    def _generate_salt(length: int):
+        ascii_table = string.ascii_letters + string.digits
+        salt = ''.join(secrets.choice(ascii_table) for i in range(length))
+        return salt.lower()
+    
+    words = secrets.choice(PATH_WORDS)
+    verb = secrets.choice(PATH_VERBS)
+    adjective = secrets.choice(PATH_ADJECTIVES)
+    return f"{adjective}-{words}-{verb}-{_generate_salt(10)}"
 
 print(generate_path())
