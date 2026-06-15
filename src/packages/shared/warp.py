@@ -1,9 +1,10 @@
-import pty, subprocess, sys, os, pty
+import pty, subprocess, sys, os, pty, time
 from enum import Enum
 
 class WarpStatus(Enum):
     CONNECTED = "Connected"
     DISCONNECTED = "Disconnected"
+    CONNECTION_FAILED = "Connection Failed"
 
 class Warp:
     def _register(self):
@@ -73,6 +74,14 @@ class Warp:
         if WarpStatus.CONNECTED.value in status_warp_result.stdout:
             return WarpStatus.CONNECTED
         return WarpStatus.DISCONNECTED
+    
+    def wait_for_connection(self, timeout=10):
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            if self.status() == WarpStatus.CONNECTED:
+                return True
+            time.sleep(0.5)
+        return False
 
     def unregister(self):
         unregister_warp_result = subprocess.run(

@@ -12,10 +12,36 @@ TEXT = "#f4f1ed"
 MUTED = "#888780"
 
 class DashboardPage:
+    def __init__(self):
+        self.warp_manager = Warp()
+        self.warp_error = False
+    
+    def on_warp_toggle(self, e, warp_status, warp_switch) -> None:
+        if e.value:
+            self.warp_manager.connect()
+            connected = self.warp_manager.wait_for_connection()
+            if connected:
+                warp_status.set_text(WarpStatus.CONNECTED.value)
+                warp_status.style(f"font-size: 18px; font-weight: 500; color: {TEXT}")
+            else:
+                self.warp_error = True
+                warp_switch.set_value(False)
+                warp_status.set_text(WarpStatus.DISCONNECTED.value)
+                warp_status.style(f"font-size: 18px; font-weight: 500; color: {MUTED}")
+                ui.notify(
+                        message="WARP connection failed. Server IP may be blocked or WARP may be unavailable!",
+                        color="deep-orange",
+                        type="warning"
+                )
+        else:
+            if not self.warp_error and self.warp_manager.status() == WarpStatus.CONNECTED:
+                self.warp_manager.disconnect()
+            warp_status.set_text(WarpStatus.DISCONNECTED.value)
+            warp_status.style(f"font-size: 18px; font-weight: 500; color: {MUTED}")
+
     def build(self) -> None:
         self.xray_client_qr_code_path = XrayConfigLoader.get_xray_qrcode_path()
         self.xray_client_vless_link = XrayConfigLoader.get_xray_vless_link()
-        self.warp_manager = Warp()
 
         @ui.page("/dashboard")
         def dashboard():
@@ -49,24 +75,14 @@ class DashboardPage:
                             f"font-size: 12px; font-weight: 750; letter-spacing: 0.08em; color: {ORANGE}"
                         )
 
-                    warp_state = self.warp_manager.status()
+                    is_connected = self.warp_manager.status() == WarpStatus.CONNECTED
                     with ui.row().classes("w-full items-center justify-between"):
-                        warp_status = ui.label(warp_state.value).style(
-                            f"font-size: 18px; font-weight: 500; color: {TEXT if warp_state == WarpStatus.CONNECTED else MUTED}"
+                        warp_status = ui.label(self.warp_manager.status().value).style(
+                            f"font-size: 18px; font-weight: 500; color: {TEXT if is_connected else MUTED}"
                         )
-                        warp_switch = ui.switch("", value=True if warp_state == WarpStatus.CONNECTED else False).props("color=deep-orange")
+                        warp_switch = ui.switch(value=True if is_connected else False).props("color=deep-orange")
 
-                    def on_warp_toggle(e):
-                        if e.value:
-                            self.warp_manager.connect()
-                            warp_status.set_text(WarpStatus.CONNECTED.value)
-                            warp_status.style(f"font-size: 18px; font-weight: 500; color: {TEXT}")
-                        else:
-                            self.warp_manager.disconnect()
-                            warp_status.set_text(WarpStatus.DISCONNECTED.value)
-                            warp_status.style(f"font-size: 18px; font-weight: 500; color: {MUTED}")
-
-                    warp_switch.on_value_change(on_warp_toggle)
+                    warp_switch.on_value_change(lambda e: self.on_warp_toggle(e, warp_status, warp_switch))
 
                 # Logout
                 ui.button("Log out", icon="logout", on_click=lambda: Auth.logout()).classes(
