@@ -1,3 +1,3 @@
 {
-    "xray_client_vless_link": "vless://fcd32ce0-3243-4603-9315-41287fce2851@s3.harus.cloud:443?encryption=None&flow=xtls-rprx-vision&security=tls&sni=s3.harus.cloud&alpn=h3%2Ch2%2Chttp%2F1.1&type=xhttp&host=s3.harus.cloud&path=BFJQbzNGKhdnSlARmnrbzLTqJHrgxrpktFbXrr&mode=auto#s3.harus.cloud"
+    "xray_client_vless_link": "vless://5b34225e-2d15-4db3-ba5f-7317a64bcc64@s3.harus.cloud:443?encryption=None&flow=xtls-rprx-vision&security=tls&sni=s3.harus.cloud&alpn=h3%2Ch2%2Chttp%2F1.1&type=xhttp&host=s3.harus.cloud&path=rpwyIqzdMwHhePGoWEFBzqLYoPezAnjbjUmMNf&mode=auto#s3.harus.cloud"
 }

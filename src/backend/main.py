@@ -47,5 +47,4 @@ def main():
     exit_function()
 
 if __name__ == "__main__":
-    #main()
-    print(warp_manager.status())
+    main()

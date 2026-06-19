@@ -19,12 +19,13 @@ RUN apt update && apt install ca-certificates curl gnupg2 lsb-release libcap2-bi
     strip --strip-unneeded /usr/bin/warp-cli && \
     strip --strip-unneeded /usr/bin/warp-svc
 
-# Build the base image for the xray_xhttp container
-FROM python:${PYTHON_VERSION}
+# Backend stage
+FROM python:${PYTHON_VERSION} AS backend
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV DEBIAN_FRONTEND=noninteractive
 ENV XDG_DATA_HOME=/xray_base/caddy_certs
+ENV SKYPORT_UI=false
 EXPOSE 443/tcp
 EXPOSE 443/udp
 COPY --from=caddy_builder /usr/bin/caddy /usr/bin/caddy
@@ -32,7 +33,9 @@ COPY --from=cloudflare_warp_installer /usr/bin/warp-cli /usr/bin/warp-cli
 COPY --from=cloudflare_warp_installer /usr/bin/warp-svc /usr/bin/warp-svc
 COPY --from=cloudflare_warp_installer /usr/sbin/setcap /usr/sbin/setcap
 COPY --from=cloudflare_warp_installer /usr/sbin/gosu /usr/sbin/gosu
-COPY . /xray_base/
+COPY backend/ /xray_base/backend
+COPY packages/ /xray_base/packages
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 WORKDIR /xray_base
 
 RUN apt update && apt install dbus iproute2 nftables libpcap0.8 libnspr4 libnss3 --no-install-recommends -y && \
@@ -43,12 +46,21 @@ RUN apt update && apt install dbus iproute2 nftables libpcap0.8 libnspr4 libnss3
     rm -rf /usr/bin/dpkg /usr/bin/dpkg-deb
 
 RUN --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=bind,source=requirements.txt,target=requirements.txt \
-    python -m pip install -r requirements.txt && \
+    --mount=type=bind,source=backend/requirements.txt,target=requirements.txt \
+    python -m pip install -r backend/requirements.txt && \
+    python -m pip install -e ./packages && \
     mkdir /xray_base/caddy_certs /run/dbus && \
     chmod +x /usr/bin/caddy && \
     setcap cap_net_bind_service=+ep /usr/bin/caddy && \
-    mv entrypoint.sh /usr/local/bin && \
     chmod +x /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
+# Frontend stage
+FROM backend AS frontend
+COPY frontend/ /xray_base/frontend
+ENV SKYPORT_UI=true
+RUN --mount=type=cache,target=/root/.cache/pip \
+    --mount=type=bind,source=frontend/requirements.txt,target=requirements.txt \
+    python -m pip install -r frontend/requirements.txt && \
+    python -m pip install -e ./packages
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

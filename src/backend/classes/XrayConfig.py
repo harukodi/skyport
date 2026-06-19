@@ -34,9 +34,9 @@ class XrayConfig:
         for line in filtered_xray_vlessenc_result:
             filtered_lines = line.replace('"', '').replace(' ', '')
             key, value = filtered_lines.split(":")
-            if key == "encryption" and xray_encryption_key is None:
+            if key == "encryption" and self.xray_encryption_key is None:
                 self.xray_encryption_key = value
-            if key == "decryption" and xray_decryption_key is None:
+            if key == "decryption" and self.xray_decryption_key is None:
                 self.xray_decryption_key = value
                 
     def generate_xray_config(self):
@@ -56,11 +56,11 @@ class XrayConfig:
 
 
     def generate_xray_qr_code_and_vless_link(self):
-        encoded_remark = quote(domain_name, safe="")
+        encoded_remark = quote(self.domain_name, safe="")
         vless_uri = f"vless://{self.xray_uuid}@{self.domain_name}:{self.port}?encryption={self.xray_encryption_key}&flow=xtls-rprx-vision&security=tls&sni={self.domain_name}&alpn=h3%2Ch2%2Chttp%2F1.1&type=xhttp&host={self.domain_name}&path={self.xray_path}&mode=auto#{encoded_remark}"
         
         qr_code = segno.make_qr(vless_uri)
-        qr_code.save(self.xray_qr_code_file, scale=8)
+        qr_code.save(self.xray_qr_code_file, border=3, scale=10)
         
         with open(self.xray_vless_link_file, 'w') as vless_link_file:
             vless_link_data = {

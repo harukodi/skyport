@@ -23,7 +23,13 @@ function start_services {
     dbus-daemon --system --fork --nopidfile
     /usr/bin/warp-svc > /dev/null 2>&1 &
     sleep 2
-    exec gosu "$XRAY_USER:$XRAY_GROUP" python /xray_base/main.py
+
+    if [ "$SKYPORT_UI" = "true" ]; then
+        gosu "$XRAY_USER:$XRAY_GROUP" python /xray_base/backend/main.py &
+        exec gosu "$XRAY_USER:$XRAY_GROUP" python /xray_base/frontend/main.py
+    else
+        exec gosu "$XRAY_USER:$XRAY_GROUP" python /xray_base/backend/main.py
+    fi
 }
 
 function main {

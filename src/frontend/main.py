@@ -19,7 +19,6 @@ class AppBootstrap():
 
     def init_services(self):
         Auth.init()
-        XrayConfigLoader.init()
         AuthMiddleware.register()
         app.add_static_files("/assets", "assets")
     
@@ -32,7 +31,10 @@ class AppBootstrap():
 if __name__ in {"__main__", "__mp_main__"}:
     load_dotenv(override=True)
     app_ui = AppBootstrap(title="Skyport")
-
+    
+    if __name__ == "__main__":
+        XrayConfigLoader.init()
+        
     app_ui.init_services()
     app_ui.build_pages()
     app_ui.run()
