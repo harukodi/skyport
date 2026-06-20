@@ -3,6 +3,7 @@ services:
     image: xia1997x/skyport:staging
     container_name: xray-warp-ct-test-container
     restart: unless-stopped
+    pull_policy: always
     cap_add:
       - NET_ADMIN
     devices:
