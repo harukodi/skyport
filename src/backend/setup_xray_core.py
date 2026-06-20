@@ -4,17 +4,19 @@ from urllib.request import urlretrieve
 from urllib.request import urlopen
 from zipfile import ZipFile
 from vars import xray_version
+from pathlib import Path
 
 arch_platform = platform.machine()
-xray_core_path = "./xray_config/xray_core"
+xray_core_path = Path(__file__).parent / "xray_config/xray_core"
 
 def chmod_xray_core():
-    subprocess.run(["chmod", "+x", f"{xray_core_path}/xray"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+    subprocess.run(["chmod", "+x", xray_core_path / "xray"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
 
 def unzip_xray_core():
-    with ZipFile(f"{xray_core_path}/xray.zip", "r") as xray_zip_file:
+    with ZipFile(xray_core_path / "xray.zip", "r") as xray_zip_file:
         xray_zip_file.extractall(path=xray_core_path)
-    for file in [f"{xray_core_path}/xray.zip", f"{xray_core_path}/README.md"]: remove(file)
+    (xray_core_path / "xray.zip").unlink()
+    (xray_core_path / "README.md").unlink(missing_ok=True)
 
 def fetch_latest_xray_version_tag():
     xray_releases_url = "https://api.github.com/repos/XTLS/Xray-core/releases"
@@ -31,8 +33,9 @@ def download_xray_binary(version):
         xray_base_url = f"https://github.com/XTLS/Xray-core/releases/download/v{version}/Xray-linux-64.zip"
     if arch_platform in ["aarch64"]:
         xray_base_url = f"https://github.com/XTLS/Xray-core/releases/download/v{version}/Xray-linux-arm64-v8a.zip"
+
     try:
-        urlretrieve(xray_base_url, f"{xray_core_path}/xray.zip")
+        urlretrieve(xray_base_url, xray_core_path / "xray.zip")
         unzip_xray_core()
 
         if arch_platform in ["AMD64", "x86_64"]:
@@ -40,8 +43,8 @@ def download_xray_binary(version):
         if arch_platform in ["aarch64"]:
             print(f"Xray-core: {version} aarch64")
     except Exception as e:
-        print(f"Xray-binary: failed to download, error: {e.reason}")
-        if not path.exists(f"{xray_core_path}/xray"):
+        print(f"Xray-binary: failed to download, error: {e}")
+        if not path.exists(xray_core_path / "xray"):
             print("Xray binary not found. Try restarting the container!")
             sys.exit(1)
         else:
@@ -53,3 +56,5 @@ def setup_xray_core():
     else:
         download_xray_binary(fetch_latest_xray_version_tag())
     chmod_xray_core()
+
+setup_xray_core()
