@@ -4,8 +4,8 @@ from shared.logger import Logger
 from time import sleep
 
 class XrayConfigLoader:
-    base_dir = Path(__file__).parent.parent.parent
-    dst_dir = Path(__file__).parent.parent / "assets" / "xray_data"
+    base_dir = Path(__file__).parent.parent.parent.resolve()
+    dst_dir = Path(__file__).parent.parent.resolve() / "assets" / "xray_data"
     xray_qr_code_file = base_dir / "backend" / "xray_config" / "xray_client_qr_code.png"
     xray_vless_link_file = base_dir / "backend" / "xray_config" / "xray_client_vless_link.json"
     xray_config_loader_logger = Logger("XrayConfigLoader")
