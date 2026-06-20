@@ -128,7 +128,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
+.nicegui
+.nicegui/
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -160,14 +161,18 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# Config files used for testing
-app/caddy_config/*
-!app/caddy_config/.gitkeep
-app/xray_config/*
-!app/xray_config/.gitkeep
-!app/xray_config/xray_core/.gitkeep
+# Config files/backend
+src/backend/caddy_config/*
+!src/backend/caddy_config/.gitkeep
+src/backend/xray_config/*
+!src/backend/xray_config/.gitkeep
+!src/backend/xray_config/xray_core/.gitkeep
 tests/client_config.json
 tests/infrastructure/xray_server_config/config/
 .terraform
 .terraform.*
 .public.env
+
+# Frontend files
+src/frontend/assets/xray_data/*
+!src/frontend/assets/xray_data/.gitkeep

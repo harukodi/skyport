@@ -2,18 +2,20 @@ import atexit, signal, sys
 from os import path
 from setup_cf_dns_record import setup_dns_record
 from setup_xray_core import setup_xray_core
-from generate_caddy_config import generate_caddy_config
 from classes.Services import Services
 from classes.XrayConfig import XrayConfig
-from classes.Warp import Warp
+from classes.CaddyConfig import CaddyConfig
+from shared.warp import Warp
 
 service_manager = Services()
 xray_config_manager = XrayConfig()
 warp_manager = Warp()
+caddy_config_manager = CaddyConfig()
+
 files_to_check = [
     "./xray_config/xray_config.json",
     "./xray_config/xray_client_qr_code.png",
-    "./xray_config/vless_link.txt"
+    "./xray_config/xray_client_vless_link.json"
 ]
 
 def initialize():
@@ -22,7 +24,7 @@ def initialize():
     warp_manager.enable_warp_tunnel()
     xray_config_manager.generate_xray_config()
     xray_config_manager.generate_xray_qr_code_and_vless_link()
-    generate_caddy_config()
+    caddy_config_manager.generate_caddyfile()
 
 def exit_function():
     def on_exit():

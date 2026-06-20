@@ -10,7 +10,7 @@
 	}
 }
 
-${domain_name} {
+{{ domain_name }} {
 	tls {
 		protocols tls1.3 tls1.3
 		ciphers TLS_AES_256_GCM_SHA384 TLS_CHACHA20_POLY1305_SHA256
@@ -18,9 +18,8 @@ ${domain_name} {
 	}
 
 	@xray_xhttp {
-		path /${xray_path}/*
+		path /{{ xray_path }}/*
 	}
-
 	handle @xray_xhttp {
 		reverse_proxy @xray_xhttp 0.0.0.0:8443 {
 			header_up X-Real-IP {http.request.header.CF-Connecting-IP}
@@ -31,10 +30,14 @@ ${domain_name} {
 			}
 		}
 	}
-	handle {
-		header Content-Type application/json
-		respond `{"error": "Unauthorized", "message": "Invalid or Missing API Key"}` 401 {
-			close
-		}
+	
+{% if skyport_ui %}
+	@frontend {
+	    path /{{ frontend_path }}/*
 	}
+	handle @frontend {
+	    uri strip_prefix /{{ frontend_path }}
+	    reverse_proxy 0.0.0.0:8080
+	}
+{% endif %}
 }
