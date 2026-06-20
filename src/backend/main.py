@@ -18,13 +18,13 @@ files_to_check = [
     "./xray_config/xray_client_vless_link.json"
 ]
 
-#def initialize():
-#    setup_dns_record()
-#    setup_xray_core()
-#    warp_manager.enable_warp_tunnel()
-#    xray_config_manager.generate_xray_config()
-#    xray_config_manager.generate_xray_qr_code_and_vless_link()
-#    caddy_config_manager.generate_caddyfile()
+def initialize():
+    setup_dns_record()
+    setup_xray_core()
+    warp_manager.enable_warp_tunnel()
+    xray_config_manager.generate_xray_config()
+    xray_config_manager.generate_xray_qr_code_and_vless_link()
+    caddy_config_manager.generate_caddyfile()
 
 def exit_function():
     def on_exit():

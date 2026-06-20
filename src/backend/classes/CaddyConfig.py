@@ -66,8 +66,18 @@ class CaddyConfig:
         words = secrets.choice(PATH_WORDS)
         verb = secrets.choice(PATH_VERBS)
         adjective = secrets.choice(PATH_ADJECTIVES)
-        return f"{adjective}-{words}-{verb}-{_generate_salt(10)}"
+        return f"{adjective}-{words}-{verb}-{_generate_salt(8)}"
 
+    def _print_dashboard_url(self):
+        if self.skyport_ui:
+            warning = "This url will only be shown once. Please save it somewhere safe."
+            dashboard_url = f"Dashboard URL: https://{domain_name}/{self.frontend_path}"
+            width = max(len(warning), len(dashboard_url)) + 4
+            border = "#" * width
+            warning_line = f"# {warning.ljust(width - 4)} #"
+            url_line = f"# {dashboard_url.ljust(width - 4)} #"
+
+            print(f"\n{border}\n{warning_line}\n{url_line}\n{border}\n")
 
     def generate_caddyfile(self):
         template = self.env.get_template(self.template_name)
@@ -80,3 +90,5 @@ class CaddyConfig:
         
         with open(OUTPUT_CADDYFILE, "w") as file:
             file.write(result)
+        
+        self._print_dashboard_url()
