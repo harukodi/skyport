@@ -4,7 +4,7 @@ from vars import enable_caddy_log, enable_warp
 
 class Services:
     def __init__(self):
-        self.base_dir = Path(".").parent.resolve()
+        self.base_dir = Path(__file__).parent.parent.resolve()
         self.xray_process = None
         self.caddy_process = None
         self.xray_binary_path = self.base_dir / "xray_config" / "xray_core" / "xray"
