@@ -7,7 +7,7 @@ from vars import xray_version
 from pathlib import Path
 
 arch_platform = platform.machine()
-xray_core_path = Path(__file__).parent / "xray_config/xray_core"
+xray_core_path = Path(__file__).parent.resolve() / "xray_config/xray_core"
 ARCH_MAP = {
     "x86_64": ("Xray-linux-64.zip", "x86_64"),
     "AMD64":  ("Xray-linux-64.zip", "x86_64"),
