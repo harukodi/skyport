@@ -7,7 +7,7 @@ jobs:
     uses: ./.github/workflows/build-staging.yaml
     with:
       DOCKERHUB_USERNAME: xia1997x
-      DOCKERHUB_REGISTRY: xray-warp-staging
+      DOCKERHUB_REGISTRY: skyport
     secrets:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
