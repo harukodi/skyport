@@ -16,7 +16,7 @@ function create_user_and_group {
 
 function set_folder_permissions {
     chown -R "$XRAY_USER:$XRAY_GROUP" /xray_base
-    chmod -R o+rwx /xray_base/xray_config/xray_core
+    chmod -R o+rwx /xray_base/backend/xray_config/xray_core
 }
 
 function start_services {
