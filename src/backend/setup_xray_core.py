@@ -4,17 +4,24 @@ from urllib.request import urlretrieve
 from urllib.request import urlopen
 from zipfile import ZipFile
 from vars import xray_version
+from pathlib import Path
 
 arch_platform = platform.machine()
-xray_core_path = "./xray_config/xray_core"
+xray_core_path = Path(__file__).parent / "xray_config/xray_core"
+ARCH_MAP = {
+    "x86_64": ("Xray-linux-64.zip", "x86_64"),
+    "AMD64":  ("Xray-linux-64.zip", "x86_64"),
+    "aarch64": ("Xray-linux-arm64-v8a.zip", "aarch64"),
+}
 
 def chmod_xray_core():
-    subprocess.run(["chmod", "+x", f"{xray_core_path}/xray"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+    subprocess.run(["chmod", "+x", xray_core_path / "xray"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
 
 def unzip_xray_core():
-    with ZipFile(f"{xray_core_path}/xray.zip", "r") as xray_zip_file:
+    with ZipFile(xray_core_path / "xray.zip", "r") as xray_zip_file:
         xray_zip_file.extractall(path=xray_core_path)
-    for file in [f"{xray_core_path}/xray.zip", f"{xray_core_path}/README.md"]: remove(file)
+    (xray_core_path / "xray.zip").unlink()
+    (xray_core_path / "README.md").unlink(missing_ok=True)
 
 def fetch_latest_xray_version_tag():
     xray_releases_url = "https://api.github.com/repos/XTLS/Xray-core/releases"
@@ -27,25 +34,27 @@ def fetch_latest_xray_version_tag():
             return xray_tag_formatted
 
 def download_xray_binary(version):
-    if arch_platform in ["AMD64", "x86_64"]:
-        xray_base_url = f"https://github.com/XTLS/Xray-core/releases/download/v{version}/Xray-linux-64.zip"
-    if arch_platform in ["aarch64"]:
-        xray_base_url = f"https://github.com/XTLS/Xray-core/releases/download/v{version}/Xray-linux-arm64-v8a.zip"
-    try:
-        urlretrieve(xray_base_url, f"{xray_core_path}/xray.zip")
-        unzip_xray_core()
+    if arch_platform not in ARCH_MAP:
+        print(f"Unsupported architecture: {arch_platform}")
+        sys.exit(1)
 
-        if arch_platform in ["AMD64", "x86_64"]:
-            print(f"Xray-core: {version} x86_64")
-        if arch_platform in ["aarch64"]:
-            print(f"Xray-core: {version} aarch64")
+    zip_name, arch_label = ARCH_MAP[arch_platform]
+    xray_base_url = f"https://github.com/XTLS/Xray-core/releases/download/v{version}/{zip_name}"
+    xray_binary = xray_core_path / "xray"
+
+    try:
+        urlretrieve(xray_base_url, xray_core_path / "xray.zip")
+        print(f"Xray-core: {version} {arch_label}")
     except Exception as e:
-        print(f"Xray-binary: failed to download, error: {e.reason}")
-        if not path.exists(f"{xray_core_path}/xray"):
+        print(f"Xray-binary: failed to download, error: {e}")
+        if xray_binary.exists():
+            print("Falling back to the previously installed binary.")
+            return
+        else:
             print("Xray binary not found. Try restarting the container!")
             sys.exit(1)
-        else:
-            print("Falling back to the previously installed binary.")
+
+    unzip_xray_core()
 
 def setup_xray_core():
     if xray_version.lower() != "latest":
