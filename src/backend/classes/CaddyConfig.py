@@ -1,4 +1,4 @@
-import secrets, string
+import secrets, string, os
 from vars import domain_name, xray_path
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
@@ -48,9 +48,14 @@ PATH_ADJECTIVES = [
 class CaddyConfig:
     def __init__(self):
         self.template_path = Path(CADDYFILE_TEMPLATE)
-        self.env = Environment(loader=FileSystemLoader(self.template_path.parent))
+        self.env = Environment(
+            loader=FileSystemLoader(self.template_path.parent), 
+            trim_blocks=True, 
+            lstrip_blocks=True
+        )
         self.template_name = self.template_path.name
-        self.skyport_ui = 
+        self.frontend_path = self._generate_frontend_path()
+        self.skyport_ui = os.environ.get("SKYPORT_UI", "false").lower() == "true"
 
     def _generate_frontend_path(self):
         def _generate_salt(length: int):
@@ -69,7 +74,8 @@ class CaddyConfig:
         result = template.render(
             domain_name=domain_name, 
             xray_path=xray_path,
-            frontend_path=self._generate_frontend_path()
+            frontend_path=self.frontend_path,
+            skyport_ui=self.skyport_ui
         )
         
         with open(OUTPUT_CADDYFILE, "w") as file:
