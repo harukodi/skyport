@@ -1,17 +1,12 @@
 import secrets, string
+from vars import domain_name, xray_path
+from pathlib import Path
+from jinja2 import Environment, FileSystemLoader
+
+CADDYFILE_TEMPLATE = "./templates/caddyfile_template.j2"
+OUTPUT_CADDYFILE = "./caddy_config/Caddyfile"
 
 PATH_WORDS = [
-    "fox", "wolf", "hawk", "bear", "crow", "lynx", "vole", "mink",
-    "otter", "crane", "finch", "bison", "moose", "heron", "stoat",
-    "kitty", "swift", "rook", "kite", "quail", "badger", "beaver",
-    "ferret", "gecko", "iguana", "jaguar", "koala", "lemur", "llama",
-    "marten", "newt", "panda", "quokka", "robin", "sable", "tapir",
-    "viper", "walrus", "xerus", "yak", "zebu", "alpaca", "cow",
-    "condor", "dingo", "egret", "falcon", "gibbon", "hyena", "impala",
-    "jackal", "kakapo", "lark", "meerkat", "numbat", "ocelot", "puffin",
-    "quetzal", "razorbill", "serval", "toucan", "uakari", "vulture",
-    "wombat", "xeme", "yellowjacket", "zorilla", "aardvark", "booby",
-    "capybara", "dugong", "echidna",
     "alice", "bella", "clara", "daisy", "ellie", "flora", "grace",
     "hazel", "iris", "julia", "kira", "luna", "mia", "nora", "olivia",
     "penny", "quinn", "rose", "stella", "tilda", "ursula", "violet",
@@ -50,14 +45,32 @@ PATH_ADJECTIVES = [
     "azure", "beige", "blunt", "brash", "brave", "brisk", "broad", "brown",
 ]
 
+class CaddyConfig:
+    def __init__(self):
+        self.template_path = Path(CADDYFILE_TEMPLATE)
+        self.env = Environment(loader=FileSystemLoader(self.template_path.parent))
+        self.template_name = self.template_path.name
+        self.skyport_ui = 
 
-def generate_path() -> str:
-    def _generate_salt(length: int):
-        ascii_table = string.ascii_letters + string.digits
-        salt = ''.join(secrets.choice(ascii_table) for i in range(length))
-        return salt.lower()
-    
-    words = secrets.choice(PATH_WORDS)
-    verb = secrets.choice(PATH_VERBS)
-    adjective = secrets.choice(PATH_ADJECTIVES)
-    return f"{adjective}-{words}-{verb}-{_generate_salt(10)}"
+    def _generate_frontend_path(self):
+        def _generate_salt(length: int):
+            ascii_table = string.ascii_letters + string.digits
+            salt = ''.join(secrets.choice(ascii_table) for i in range(length))
+            return salt.lower()
+
+        words = secrets.choice(PATH_WORDS)
+        verb = secrets.choice(PATH_VERBS)
+        adjective = secrets.choice(PATH_ADJECTIVES)
+        return f"{adjective}-{words}-{verb}-{_generate_salt(10)}"
+
+
+    def generate_caddyfile(self):
+        template = self.env.get_template(self.template_name)
+        result = template.render(
+            domain_name=domain_name, 
+            xray_path=xray_path,
+            frontend_path=self._generate_frontend_path()
+        )
+        
+        with open(OUTPUT_CADDYFILE, "w") as file:
+            file.write(result)
