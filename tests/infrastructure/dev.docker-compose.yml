@@ -1,6 +1,6 @@
 services:
   xray-warp-ct-test-container:
-    image: xia1997x/xray-warp-staging:staging
+    image: xia1997x/skyport:staging
     container_name: xray-warp-ct-test-container
     restart: unless-stopped
     cap_add:
