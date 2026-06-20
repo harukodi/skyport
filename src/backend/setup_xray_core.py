@@ -44,15 +44,17 @@ def download_xray_binary(version):
 
     try:
         urlretrieve(xray_base_url, xray_core_path / "xray.zip")
-        unzip_xray_core()
         print(f"Xray-core: {version} {arch_label}")
     except Exception as e:
         print(f"Xray-binary: failed to download, error: {e}")
         if xray_binary.exists():
             print("Falling back to the previously installed binary.")
+            return
         else:
             print("Xray binary not found. Try restarting the container!")
             sys.exit(1)
+
+    unzip_xray_core()
 
 def setup_xray_core():
     if xray_version.lower() != "latest":
