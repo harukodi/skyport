@@ -6,7 +6,7 @@ from urllib.parse import quote
 
 class XrayConfig:
     def __init__(self):
-        self.base_dir = Path(".").parent.resolve()
+        self.base_dir = Path(__file__).parent.parent.resolve()
         self.xray_config_template = self.base_dir / "templates" / "xray_config_template.json"
         self.xray_config_file = self.base_dir / "xray_config" / "xray_config.json"
         self.xray_qr_code_file = self.base_dir / "xray_config" / "xray_client_qr_code.png"
