@@ -3,8 +3,9 @@ from vars import domain_name, xray_path
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
-CADDYFILE_TEMPLATE = "./templates/caddyfile_template.j2"
-OUTPUT_CADDYFILE = "./caddy_config/Caddyfile"
+BASE_DIR = Path(__file__).parent.parent.resolve()
+CADDYFILE_TEMPLATE = BASE_DIR / "templates" / "caddyfile_template.j2"
+OUTPUT_CADDYFILE = BASE_DIR / "caddy_config" / "Caddyfile"
 
 PATH_WORDS = [
     "alice", "bella", "clara", "daisy", "ellie", "flora", "grace",
