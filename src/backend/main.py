@@ -49,5 +49,4 @@ def main():
     exit_function()
 
 if __name__ == "__main__":
-    #main()
-    caddy_config_manager.generate_caddyfile()
+    main()

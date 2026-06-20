@@ -26,6 +26,7 @@ ENV PYTHONUNBUFFERED=1
 ENV DEBIAN_FRONTEND=noninteractive
 ENV XDG_DATA_HOME=/xray_base/caddy_certs
 ENV SKYPORT_UI=false
+ENV PRODUCTION_MODE=true
 EXPOSE 443/tcp
 EXPOSE 443/udp
 COPY --from=caddy_builder /usr/bin/caddy /usr/bin/caddy
