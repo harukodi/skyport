@@ -7,12 +7,14 @@ from classes.AuthMiddleware import AuthMiddleware
 from classes.NotFoundPage import NotFoundPage
 from classes.XrayConfigLoader import XrayConfigLoader
 from dotenv import load_dotenv
+from pathlib import Path
 
 
 class AppBootstrap():
     def __init__(self, title: str):
         self.title = title
         self.production_mode = os.environ.get("PRODUCTION_MODE", "false").lower() == "true"
+        self.assets_dir = Path(__file__).parent.resolve() / "assets"
 
     def build_pages(self):
         LoginPage(on_login=Auth.verify_login, title=self.title, redirect_to="/dashboard").build()
@@ -22,7 +24,7 @@ class AppBootstrap():
     def init_services(self):
         Auth.init()
         AuthMiddleware.register()
-        app.add_static_files("/assets", "assets")
+        app.add_static_files("/assets", self.assets_dir)
     
     def run(self):
         if self.production_mode:
