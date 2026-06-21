@@ -23,7 +23,6 @@ def initialize():
     setup_xray_core()
     warp_handler.enable_warp_tunnel()
     xray_config_manager.generate_xray_config()
-    xray_config_manager.generate_xray_qr_code_and_vless_link()
     caddy_config_manager.generate_caddyfile()
 
 def exit_function():
