@@ -4,6 +4,7 @@ from string import Template
 from pathlib import Path
 from urllib.parse import quote
 from .DataStore import DataStore
+from .InfoPrinter import InfoPrinter
 
 class XrayConfig:
     def __init__(self):
@@ -38,13 +39,6 @@ class XrayConfig:
                 self.xray_encryption_key = value
             if key == "decryption" and self.xray_decryption_key is None:
                 self.xray_decryption_key = value
-                
-    def print_vless_link(self):
-        vless_link = self.data_store.get("vless_uri")
-        print("=" * 21)
-        print("VLESS CONNECTION LINK")
-        print("=" * 21)
-        print(f"{vless_link}\n")
 
     def _generate_xray_qr_code_and_vless_link(self):
         encoded_remark = quote(self.domain_name, safe="")
@@ -74,4 +68,4 @@ class XrayConfig:
         with open(self.xray_config_file, 'w') as file:
             file.write(xray_config_filled)
         
-        self.print_vless_link()
+        InfoPrinter.print_vless_link()

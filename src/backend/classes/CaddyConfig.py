@@ -3,6 +3,7 @@ from vars import domain_name, xray_path
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from .DataStore import DataStore
+from .InfoPrinter import InfoPrinter
 
 BASE_DIR = Path(__file__).parent.parent.resolve()
 CADDYFILE_TEMPLATE = BASE_DIR / "templates" / "caddyfile_template.j2"
@@ -74,15 +75,6 @@ class CaddyConfig:
 
         return frontend_path
 
-    def print_dashboard_url(self):
-        frontend_path = self.data_store.get("frontend_path")
-        if self.enable_skyport_ui:
-            dashboard_url = f"https://{domain_name}/{frontend_path}/"
-            print("=" * 13)
-            print("DASHBOARD URL")
-            print("=" * 13)
-            print(f"{dashboard_url}\n")
-
     def generate_caddyfile(self):
         template = self.env.get_template(self.template_name)
         result = template.render(
@@ -95,4 +87,4 @@ class CaddyConfig:
         with open(OUTPUT_CADDYFILE, "w") as file:
             file.write(result)
         
-        self.print_dashboard_url()
+        InfoPrinter.print_dashboard_url()
