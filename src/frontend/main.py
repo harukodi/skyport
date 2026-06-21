@@ -8,6 +8,7 @@ from classes.NotFoundPage import NotFoundPage
 from classes.ConfigLoader import ConfigLoader
 from classes.DataStoreReader import DataStoreReader
 from dotenv import load_dotenv
+from pathlib import Path
 
 
 class AppBootstrap():
