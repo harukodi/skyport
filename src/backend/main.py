@@ -48,7 +48,4 @@ def main():
     exit_function()
 
 if __name__ == "__main__":
-    #main()
-    setup_xray_core()
-    caddy_config_manager.generate_caddyfile()
-    xray_config_manager.generate_xray_config()
+    main()
