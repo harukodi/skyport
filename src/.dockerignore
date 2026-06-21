@@ -36,8 +36,7 @@
 **/*.egg-info/
 **/*.egg
 **/.eggs/
-**/xray_client_qr_code.png
-**/xray_client_vless_link.json
+**/data_store.db
 **/xray_core/**
 **/caddy_config/**
 LICENSE

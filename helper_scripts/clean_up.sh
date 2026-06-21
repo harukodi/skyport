@@ -1,8 +1,7 @@
 files_to_remove=(
     "src/backend/caddy_config/*"
     "src/backend/xray_config/xray_config.json"
-    "src/backend/xray_config/xray_client_vless_link.json"
-    "src/backend/xray_config/xray_client_qr_code.png"
+    "src/backend/xray_config/db/data_store.db"
     "src/backend/xray_config/xray_core/*"
     "src/frontend/assets/xray_data/*"
     "tests/client_config.json"

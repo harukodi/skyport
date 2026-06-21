@@ -2,6 +2,7 @@ import secrets, string, os
 from vars import domain_name, xray_path
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
+from .DataStore import DataStore
 
 BASE_DIR = Path(__file__).parent.parent.resolve()
 CADDYFILE_TEMPLATE = BASE_DIR / "templates" / "caddyfile_template.j2"
@@ -55,8 +56,9 @@ class CaddyConfig:
             lstrip_blocks=True
         )
         self.template_name = self.template_path.name
+        self.data_store = DataStore()
         self.frontend_path = self._generate_frontend_path()
-        self.skyport_ui = os.environ.get("SKYPORT_UI", "false").lower() == "true"
+        self.enable_skyport_ui = os.environ.get("SKYPORT_UI", "false").lower() == "true"
 
     def _generate_frontend_path(self):
         def _generate_salt(length: int):
@@ -67,29 +69,30 @@ class CaddyConfig:
         words = secrets.choice(PATH_WORDS)
         verb = secrets.choice(PATH_VERBS)
         adjective = secrets.choice(PATH_ADJECTIVES)
-        return f"{adjective}-{words}-{verb}-{_generate_salt(8)}"
+        frontend_path = f"{adjective}-{words}-{verb}-{_generate_salt(8)}"
+        self.data_store.insert("frontend_path", frontend_path)
 
-    def _print_dashboard_url(self):
-        if self.skyport_ui:
-            warning = "This url will only be shown once. Please save it somewhere safe."
-            dashboard_url = f"Dashboard URL: https://{domain_name}/{self.frontend_path}"
-            width = max(len(warning), len(dashboard_url)) + 4
-            border = "#" * width
-            warning_line = f"# {warning.ljust(width - 4)} #"
-            url_line = f"# {dashboard_url.ljust(width - 4)} #"
+        return frontend_path
 
-            print(f"\n{border}\n{warning_line}\n{url_line}\n{border}\n")
+    def print_dashboard_url(self):
+        frontend_path = self.data_store.get("frontend_path")
+        if self.enable_skyport_ui:
+            dashboard_url = f"https://{domain_name}/{frontend_path}/"
+            print("=" * 13)
+            print("DASHBOARD URL")
+            print("=" * 13)
+            print(f"{dashboard_url}\n")
 
     def generate_caddyfile(self):
         template = self.env.get_template(self.template_name)
         result = template.render(
             domain_name=domain_name, 
             xray_path=xray_path,
-            frontend_path=self.frontend_path,
-            skyport_ui=self.skyport_ui
+            frontend_path=self.data_store.get("frontend_path"),
+            enable_skyport_ui=self.enable_skyport_ui
         )
         
         with open(OUTPUT_CADDYFILE, "w") as file:
             file.write(result)
         
-        self._print_dashboard_url()
+        self.print_dashboard_url()
