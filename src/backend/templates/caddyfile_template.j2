@@ -37,6 +37,7 @@
 	}
 	handle @frontend {
 	    uri strip_prefix /{{ frontend_path }}
+		header_up X-Forwarded-Prefix /{{ frontend_path }}
 	    reverse_proxy 0.0.0.0:8080
 	}
 {% endif %}

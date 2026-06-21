@@ -1,7 +1,7 @@
 from nicegui import ui
 from classes.Auth import Auth
 from datetime import datetime
-from classes.XrayConfigLoader import XrayConfigLoader
+from .ConfigLoader import ConfigLoader
 from shared.warp import Warp, WarpStatus
 
 STARTED = datetime(2026, 5, 12, 0, 0, 0)
@@ -40,8 +40,8 @@ class DashboardPage:
             warp_status.style(f"font-size: 18px; font-weight: 500; color: {MUTED}")
 
     def build(self) -> None:
-        self.xray_client_qr_code_path = XrayConfigLoader.get_xray_qrcode_path()
-        self.xray_client_vless_link = XrayConfigLoader.get_xray_vless_link()
+        self.xray_client_qr_code_base64 = ConfigLoader.get_xray_qrcode()
+        self.xray_client_vless_uri = ConfigLoader.get_xray_vless_uri()
 
         @ui.page("/dashboard")
         def dashboard():
@@ -61,10 +61,10 @@ class DashboardPage:
                         ui.label("QR CODE").style(
                             f"font-size: 12px; font-weight: 750; letter-spacing: 0.08em; color: {ORANGE}"
                         )
-                    ui.image(self.xray_client_qr_code_path).classes("w-48 mb-4").style(
+                    ui.image(f"data:image/png;base64,{self.xray_client_qr_code_base64}").classes("w-48 mb-4").style(
                         f"border-radius: 12px; outline: 2px dashed {ORANGE}; outline-offset: 4px"
                     )
-                    ui.button("COPY VLESS LINK", icon="content_copy", on_click=lambda: ui.clipboard.write(self.xray_client_vless_link)).props("flat color=deep-orange")
+                    ui.button("COPY VLESS LINK", icon="content_copy", on_click=lambda: ui.clipboard.write(self.xray_client_vless_uri)).props("flat color=deep-orange")
 
 
                 # WARP container
