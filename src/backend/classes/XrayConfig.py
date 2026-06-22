@@ -1,4 +1,4 @@
-import subprocess, segno, shelve, io, base64
+import subprocess, segno, io, base64
 from vars import xray_uuid, xray_path, xray_encryption_key, xray_decryption_key, domain_name, port
 from string import Template
 from pathlib import Path
