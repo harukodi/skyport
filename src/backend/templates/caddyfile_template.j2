@@ -17,6 +17,14 @@
 		curves x25519
 	}
 
+	@xray_probe {
+		path /{{ xray_path }}/check
+	}
+
+	handle @xray_probe {
+		respond 204
+	}
+
 	@xray_xhttp {
 		path /{{ xray_path }}/*
 	}

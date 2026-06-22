@@ -3,7 +3,6 @@ from vars import domain_name, xray_path
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from .DataStore import DataStore
-from .InfoPrinter import InfoPrinter
 
 BASE_DIR = Path(__file__).parent.parent.resolve()
 CADDYFILE_TEMPLATE = BASE_DIR / "templates" / "caddyfile_template.j2"
@@ -86,5 +85,3 @@ class CaddyConfig:
         
         with open(OUTPUT_CADDYFILE, "w") as file:
             file.write(result)
-        
-        InfoPrinter.print_dashboard_url()
