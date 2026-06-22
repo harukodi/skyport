@@ -31,22 +31,9 @@ class Services:
         return template
 
     def _start_xray(self):
-        if enable_warp.lower() == "true":
-            xray_config = self._read_template(self.xray_config_path)
-            socks_config = self._read_template(self.xray_socks_outbound_config_path)
-            xray_config["outbounds"].insert(0, socks_config)
-            
-            with tempfile.NamedTemporaryFile("w+", prefix="xray_config", suffix=".json" , delete=False) as xray_config_temp:
-                json.dump(xray_config, xray_config_temp, indent=4)
-                xray_config_temp.flush()
-            
-                self.xray_process = subprocess.Popen(
-                    [self.xray_binary_path, "run", "-c", xray_config_temp.name]
-                )
-        else:
-            self.xray_process = subprocess.Popen(
-                [self.xray_binary_path, "run", "-c", self.xray_config_path]
-            )
+        self.xray_process = subprocess.Popen(
+            [self.xray_binary_path, "run", "-c", self.xray_config_path]
+        )
 
     def start_services(self):
         self._start_xray()

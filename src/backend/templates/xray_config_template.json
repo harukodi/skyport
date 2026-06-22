@@ -1,6 +1,14 @@
 {
     "log": {
-        "loglevel": "info"
+        "loglevel": "warning"
+    },
+    "observatory": {
+        "subjectSelector": [
+            "WARP_PROXY_OUTBOUND"
+        ],
+        "probeUrl": "https://${domain_name}:${port}/${xray_path}/check",
+        "probeInterval": "2s",
+        "enableConcurrency": false
     },
     "inbounds": [
         {
@@ -33,12 +41,36 @@
             "tag": "DIRECT"
         },
         {
+            "protocol": "socks",
+            "settings": {
+                "servers": [
+                    {
+                        "address": "127.0.0.1",
+                        "port": 40000
+                    }
+                ]
+            },
+            "tag": "WARP_PROXY_OUTBOUND"
+        },
+        {
             "protocol": "blackhole",
             "settings": {},
             "tag": "BLOCK"
         }
     ],
     "routing": {
+        "balancers": [
+            {
+                "tag": "EGRESS_BALANCER",
+                "selector": [
+                    "WARP_PROXY_OUTBOUND"
+                ],
+                "fallbackTag": "DIRECT",
+                "strategy": {
+                    "type": "random"
+                }
+            }
+        ],
         "rules": [
             {
                 "ip": [
@@ -53,6 +85,11 @@
                 ],
                 "outboundTag": "BLOCK",
                 "type": "field"
+            },
+            {
+                "type": "field",
+                "network": "tcp,udp",
+                "balancerTag": "EGRESS_BALANCER"
             }
         ]
     }

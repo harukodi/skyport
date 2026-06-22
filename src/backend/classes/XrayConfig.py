@@ -57,7 +57,9 @@ class XrayConfig:
         xray_config_substitute_values = {
             "xray_uuid": self.xray_uuid,
             "xray_path": self.xray_path,
-            "xray_decryption_key": self.xray_decryption_key
+            "xray_decryption_key": self.xray_decryption_key,
+            "domain_name": self.domain_name,
+            "port": self.port
         }
     
         with open(self.xray_config_template, 'r') as file:
