@@ -9,7 +9,6 @@ class Services:
         self.caddy_process = None
         self.xray_binary_path = self.base_dir / "xray_config" / "xray_core" / "xray"
         self.xray_config_path = self.base_dir / "xray_config" / "xray_config.json"
-        self.xray_socks_outbound_config_path = self.base_dir / "templates" / "xray_socks_template.json"
         self.caddy_config_path = self.base_dir / "caddy_config" / "Caddyfile"
         self.enable_caddy_log = enable_caddy_log
 
