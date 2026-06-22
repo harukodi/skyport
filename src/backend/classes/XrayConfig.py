@@ -4,7 +4,6 @@ from string import Template
 from pathlib import Path
 from urllib.parse import quote
 from .DataStore import DataStore
-from .InfoPrinter import InfoPrinter
 
 class XrayConfig:
     def __init__(self):
@@ -67,5 +66,3 @@ class XrayConfig:
     
         with open(self.xray_config_file, 'w') as file:
             file.write(xray_config_filled)
-        
-        InfoPrinter.print_vless_link()

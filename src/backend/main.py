@@ -6,6 +6,7 @@ from classes.Services import Services
 from classes.XrayConfig import XrayConfig
 from classes.CaddyConfig import CaddyConfig
 from classes.WarpHandler import WarpHandler
+from classes.InfoPrinter import InfoPrinter
 
 service_manager = Services()
 xray_config_manager = XrayConfig()
@@ -23,7 +24,6 @@ def initialize():
     setup_xray_core()
     warp_handler.enable_warp_tunnel()
     xray_config_manager.generate_xray_config()
-    xray_config_manager.generate_xray_qr_code_and_vless_link()
     caddy_config_manager.generate_caddyfile()
 
 def exit_function():
@@ -44,11 +44,10 @@ def main():
         setup_xray_core()
         warp_handler.enable_warp_tunnel()
     
+    InfoPrinter.print_dashboard_url()
+    InfoPrinter.print_vless_link()
     service_manager.start_services()
     exit_function()
 
 if __name__ == "__main__":
-    #main()
-    setup_xray_core()
-    caddy_config_manager.generate_caddyfile()
-    xray_config_manager.generate_xray_config()
+    main()
