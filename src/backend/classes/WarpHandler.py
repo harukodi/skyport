@@ -1,10 +1,10 @@
 from vars import enable_warp
-from shared.warp import Warp
+from shared.warp_manager import WarpManager
 
 class WarpHandler:
     def __init__(self):
         self.enable_warp = True if enable_warp.lower() == "true" else False
-        self.warp = Warp()
+        self.warp = WarpManager()
     
     def enable_warp_tunnel(self):
         self.warp.enable_warp_tunnel(self.enable_warp)

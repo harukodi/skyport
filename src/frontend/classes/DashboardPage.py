@@ -2,7 +2,7 @@ from nicegui import ui
 from classes.Auth import Auth
 from datetime import datetime
 from .ConfigLoader import ConfigLoader
-from shared.warp import Warp, WarpStatus
+from shared.warp_manager import WarpManager, WarpStatus
 
 STARTED = datetime(2026, 5, 12, 0, 0, 0)
 CARD_STYLE = "background-color: #252523; border-radius: 16px;"
@@ -13,7 +13,7 @@ MUTED = "#888780"
 
 class DashboardPage:
     def __init__(self):
-        self.warp_manager = Warp()
+        self.warp_manager = WarpManager()
         self.warp_error = False
     
     def on_warp_toggle(self, e, warp_status, warp_switch) -> None:

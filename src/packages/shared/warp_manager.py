@@ -1,12 +1,16 @@
 import pty, subprocess, sys, os, pty, time
 from enum import Enum
+from shared.logger import Logger
 
 class WarpStatus(Enum):
     CONNECTED = "Connected"
     DISCONNECTED = "Disconnected"
     CONNECTION_FAILED = "Connection Failed"
 
-class Warp:
+class WarpManager:
+    def __init__(self):
+        self.logger = Logger("WarpManager")
+
     def _register(self):
         master, slave = pty.openpty()
         register_warp_result = subprocess.Popen(
@@ -21,9 +25,9 @@ class Warp:
         os.close(master)
         
         if register_warp_result.returncode == 0:
-            print("Warp was registered successfully!")
+            self.logger.info("Warp was registered successfully!")
         else:
-            print("Warp registration failed!")
+            self.logger.error("Warp registration failed!")
             sys.exit(1)
 
     def _set_mode(self):
@@ -32,8 +36,8 @@ class Warp:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL
         )
-        if set_warp_mode_result.returncode == 0:
-            print(f"Warp mode set to proxy")
+        if set_warp_mode_result.returncode != 0:
+            self.logger.error("Failed to set Warp mode!")
 
     def connect(self):
         connect_warp_result = subprocess.run(
@@ -42,13 +46,14 @@ class Warp:
             stderr=subprocess.DEVNULL
         )
         
-        if connect_warp_result.returncode != 0:
-            print("Warp connection failed!")
-            sys.exit(1)
+        if connect_warp_result.returncode == 0:
+            self.logger.info("Warp connected successfully!")
+        else:
+            self.logger.error("Warp connection failed!")
             
     def enable_warp_tunnel(self, enable_warp: bool):
         if not enable_warp:
-            print("Warp is disabled. Skipping Warp connection.")
+            self.logger.info("Warp is disabled. Skipping Warp connection.")
             return
         
         self._register()
@@ -63,7 +68,7 @@ class Warp:
         )
         
         if disconnect_warp_result.returncode == 0:
-            print("Warp disconnected successfully!")
+            self.logger.info("Warp disconnected successfully!")
 
     def status(self):
         status_warp_result = subprocess.run(
@@ -91,4 +96,4 @@ class Warp:
         )
         
         if unregister_warp_result.returncode == 0:
-            print("Warp unregistered successfully!")
+            self.logger.info("Warp unregistered successfully!")
