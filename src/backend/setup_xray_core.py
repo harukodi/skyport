@@ -5,7 +5,9 @@ from urllib.request import urlopen
 from zipfile import ZipFile
 from vars import xray_version
 from pathlib import Path
+from shared.Logger import Logger
 
+logger = Logger("XrayCoreSetup")
 arch_platform = platform.machine()
 xray_core_path = Path(__file__).parent.resolve() / "xray_config/xray_core"
 ARCH_MAP = {
@@ -35,7 +37,7 @@ def fetch_latest_xray_version_tag():
 
 def download_xray_binary(version):
     if arch_platform not in ARCH_MAP:
-        print(f"Unsupported architecture: {arch_platform}")
+        logger.error(f"Unsupported architecture: {arch_platform}")
         sys.exit(1)
 
     zip_name, arch_label = ARCH_MAP[arch_platform]
@@ -44,14 +46,14 @@ def download_xray_binary(version):
 
     try:
         urlretrieve(xray_base_url, xray_core_path / "xray.zip")
-        print(f"Xray-core: {version} {arch_label}")
+        logger.info(f"Xray-core: {version} {arch_label}")
     except Exception as e:
-        print(f"Xray-binary: failed to download, error: {e}")
+        logger.error(f"Xray-binary: failed to download, error: {e}")
         if xray_binary.exists():
-            print("Falling back to the previously installed binary.")
+            logger.info("Falling back to the previously installed binary.")
             return
         else:
-            print("Xray binary not found. Try restarting the container!")
+            logger.error("Xray binary not found. Try restarting the container!")
             sys.exit(1)
 
     unzip_xray_core()

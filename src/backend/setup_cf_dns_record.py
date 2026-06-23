@@ -3,6 +3,9 @@ import cloudflare
 from urllib.request import urlopen
 from cloudflare import Cloudflare
 from vars import cloudflare_auth_token, domain_name
+from shared.Logger import Logger
+
+logger = Logger("CloudflareClient")
 
 class DnsRecordDoesNotExist(Exception):
     pass
@@ -64,18 +67,18 @@ def setup_dns_record():
         if verify_cf_api_token():
             delete_existing_dns_record(zone_id)
             create_dns_record(zone_id)
-            print(f"DNS record for {domain_name} has been updated.")
+            logger.info(f"DNS record for {domain_name} has been updated.")
         else:
-            print("Invalid Cloudflare API token or insufficient permissions.")
+            logger.error("Invalid Cloudflare API token or insufficient permissions.")
             sys.exit(1)
     except DnsRecordDoesNotExist:
         create_dns_record(zone_id)
-        print(f"DNS record for {domain_name} has been created.")
+        logger.info(f"DNS record for {domain_name} has been created.")
     except cloudflare.APIStatusError as e:
         error_message = e.errors[0].message.rstrip(".")
         if e.status_code == 400:
-            print(f"{error_message} for {domain_name}.")
-            print("Continuing...")
+            logger.warning(f"{error_message} for {domain_name}.")
+            logger.info("Continuing...")
         else:
-            print(f"Error {e.status_code}: {error_message}")
+            logger.error(f"Error {e.status_code}: {error_message}")
             sys.exit(1)
