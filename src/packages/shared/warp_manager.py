@@ -38,6 +38,7 @@ class WarpManager:
         )
         if set_warp_mode_result.returncode != 0:
             self.logger.error("Failed to set Warp mode!")
+            sys.exit(1)
 
     def connect(self):
         connect_warp_result = subprocess.run(
