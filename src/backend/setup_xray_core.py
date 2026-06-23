@@ -5,7 +5,7 @@ from urllib.request import urlopen
 from zipfile import ZipFile
 from vars import xray_version
 from pathlib import Path
-from shared.Logger import Logger
+from shared.logger import Logger
 
 logger = Logger("XrayCoreSetup")
 arch_platform = platform.machine()

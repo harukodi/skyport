@@ -3,7 +3,7 @@ import cloudflare
 from urllib.request import urlopen
 from cloudflare import Cloudflare
 from vars import cloudflare_auth_token, domain_name
-from shared.Logger import Logger
+from shared.logger import Logger
 
 logger = Logger("CloudflareClient")
 
