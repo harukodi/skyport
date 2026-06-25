@@ -1,25 +1,13 @@
 import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
-from enum import Enum
-
-class Platforms(str, Enum):
-    android = "android"
-    windows = "windows"
-    linux = "linux"
-    macos = "macos"
+from .ClientBinariesManager import ClientBinariesManager, Platforms
 
 class BinaryProxer:
-    PLATFORM_BINARIES = {
-        Platforms.android: "https://github.com/2dust/v2rayNG/releases/latest/download/v2rayNG_2.2.5_universal.apk",
-        Platforms.windows: "https://example.com/windows_binary.exe",
-        Platforms.linux:   "https://example.com/linux_binary",
-        Platforms.macos:   "https://example.com/macos_binary",
-    }
-
     def __init__(self, app: FastAPI):
         self.app = app
         self.client = httpx.AsyncClient()
+        self.client_binaries_manager = ClientBinariesManager()
         self.api_route = "/client/dl/{platform}"
         self._register_routes()
         self._register_events()
@@ -37,8 +25,8 @@ class BinaryProxer:
             methods=["GET"]
         )
     
-    async def proxy_binary(self, platform: Platforms):
-        binary_url = self.PLATFORM_BINARIES.get(platform)
+    async def proxy_binary(self, platform: Platforms) -> StreamingResponse:
+        binary_url = await self.client_binaries_manager.get_client_binary_url(platform)
         if not binary_url:
             raise HTTPException(status_code=404, detail="Platform not supported")
 
