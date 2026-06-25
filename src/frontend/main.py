@@ -6,6 +6,7 @@ from classes.Auth import Auth
 from classes.AuthMiddleware import AuthMiddleware
 from classes.NotFoundPage import NotFoundPage
 from classes.DataStoreReader import DataStoreReader
+from classes.BinaryProxer import BinaryProxer
 from dotenv import load_dotenv
 
 
@@ -13,6 +14,7 @@ class AppBootstrap():
     def __init__(self, title: str):
         self.title = title
         self.production_mode = os.environ.get("PRODUCTION_MODE", "false").lower() == "true"
+        self.app = app
         load_dotenv(override=True)
 
     def build_pages(self):
@@ -23,6 +25,7 @@ class AppBootstrap():
     def init_services(self):
         Auth.init()
         AuthMiddleware.register()
+        BinaryProxer(self.app)
     
     def run(self):
         if self.production_mode:
@@ -42,7 +45,6 @@ class AppBootstrap():
             )
 
 if __name__ in {"__main__", "__mp_main__"}:
-    production_mode = os.environ.get("PRODUCTION_MODE", "false").lower() == "true"
     app_ui = AppBootstrap(title="Skyport")
 
     if __name__ == "__main__":

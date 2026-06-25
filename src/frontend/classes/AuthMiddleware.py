@@ -4,7 +4,13 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from nicegui import app
 from classes.Auth import Auth
 
-unrestricted_paths = {"/"}
+unrestricted_paths = {
+    "/", 
+    "/client/dl/android", 
+    "/client/dl/windows", 
+    "/client/dl/linux", 
+    "/client/dl/macos"
+}
 
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
