@@ -24,8 +24,8 @@ class AppBootstrap():
 
     def init_services(self):
         Auth.init()
-        AuthMiddleware.register()
-        BinaryProxer(self.app)
+        AuthMiddleware
+        BinaryProxer()
     
     def run(self):
         if self.production_mode:

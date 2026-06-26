@@ -28,6 +28,7 @@ class ClientBinariesManager:
     async def _fetch_windows_binary_url(self, platform: Platform) -> str:
         owner, repo = self.V2RAYN_REPO
         assets = await self._get_latest_assets(owner, repo)
+        print(assets)
         asset = next(
             asset for asset in assets 
             if asset["name"] == platform.value
@@ -54,34 +55,23 @@ class ClientBinariesManager:
     
     async def get_client_binary_url(self, platform: Platform) -> str:
         """
-        Gets the download URL for the specified architecture.
+        Fetches the GitHub release download URL for the specified client platform.
+        Args:
+            platform: Target platform to fetch the binary URL for.
+        Returns:
+            Download URL string pointing to the latest GitHub release binary.
+        Raises:
+            ValueError: If the platform is not supported.
         """
         if platform in (Platform.WINDOWS_X86, Platform.WINDOWS_ARM64):
-            platform = Platform(platform.value)
+            print("crash")
             return await self._fetch_windows_binary_url(platform)
-        
+
         elif platform == Platform.ANDROID_UNIVERSAL:
             return await self._fetch_android_binary_url(platform)
-        
+
         elif platform in (Platform.LINUX_X86, Platform.LINUX_ARM64):
-            platform = Platform(platform.value)
             return await self._fetch_linux_binary_url(platform)
-        
+
         else:
             raise ValueError("Unsupported platform")
-        
-
-async def main():
-    manager = ClientBinariesManager()
-    platforms = [
-        Platform.WINDOWS_X86,
-        Platform.WINDOWS_ARM64,
-        Platform.ANDROID_UNIVERSAL,
-        Platform.LINUX_X86,
-        Platform.LINUX_ARM64
-    ]
-    for platform in platforms:
-        url = await manager.get_client_binary_url(platform)
-        print(f"{platform.value}: {url}")
-
-asyncio.run(main())
