@@ -16,13 +16,13 @@ class LoginPage:
             @layer overrides {
                 .q-menu--dark {
                     box-shadow: none !important;
-                    border-radius: 0.5rem 0.5rem 0.5rem 0.5rem !important;
+                    border-radius: 0.5rem !important;
                     margin-top: 4px !important;
                 }
             }
         ''')
         with ui.column().classes("items-center w-68"):
-            with ui.dropdown_button("Get clients", icon="devices").classes("w-68 rounded-lg py-2").props("flat color=deep-orange dark dropdown-icon=expand_more no-icon-animation").style("border: 0.5px solid #D85A30"):
+            with ui.dropdown_button("Get clients", icon="devices").classes("w-68 rounded-lg py-2").props("flat color=deep-orange dark dropdown-icon=unfold_more no-icon-animation").style("border: 0.5px solid #D85A30"):
                 for platform in Platform:
                     ui.item(
                         platform.name.replace("_", " ").lower().capitalize(),
