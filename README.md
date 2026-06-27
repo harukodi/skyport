@@ -1,26 +1,42 @@
-# xray-warp-ct docs
+# Skyport
 
-## Prerequisites
-* Docker and Docker-compose
-* Non-root account
-* Domain name on cloudflare
-* Cloudflare auth token with the `Zone.DNS EDIT` and `Zone.Zone READ` permissions
+A self-hosted, censorship-resistant proxy panel built on Xray-core with Cloudflare CDN fronting and WARP egress. Designed to resist passive traffic analysis, active probing, and ML-based classification.
 
-## Create docker-compose file and the needed folders
+## Features
+
+- VLESS+XHTTP tunneled through Cloudflare CDN
+- Cloudflare WARP as outbound egress (toggleable)
+- Automatic TLS via Caddy + Cloudflare DNS
+- Web UI with QR code and VLESS link generation
+- S3/MinIO facade for GFW active probe resistance
+- Single container deployment
+
+## Requirements
+
+- A domain managed by Cloudflare
+- A Cloudflare auth token with `Zone.DNS Edit` and `Zone.Zone Read` permissions
+- Docker and Docker Compose
+- A VPS with `NET_ADMIN` capability (required for WARP/TUN)
+
+## Installation
+
+### 1. Create directory structure
+
 ```bash
-mkdir xray-warp-ct && \
-cd xray-warp-ct && \
-mkdir -p config/{certs,caddy_config,xray_config/xray_core} && \
+mkdir skyport && \
+cd skyport && \
+mkdir -p config/{certs,caddy_config,xray_config/xray_core,xray_config/db} && \
 touch docker-compose.yaml && \
 touch .env
 ```
 
-## Docker-compose file example
+### 2. Create `docker-compose.yml`
+
 ```yaml
 services:
-  xray-warp:
-    image: xia1997x/xray-warp:latest
-    container_name: xray-warp-ct
+  skyport:
+    image: xia1997x/skyport:staging
+    container_name: skyport
     restart: always
     env_file:
       - .env
@@ -32,78 +48,61 @@ services:
       - /dev/net/tun:/dev/net/tun
     volumes:
       - ./config/certs:/xray_base/caddy_certs
-      - ./config/xray_config:/xray_base/xray_config
-      - ./config/xray_config/xray_core:/xray_base/xray_config/xray_core
-      - ./config/caddy_config:/xray_base/caddy_config
+      - ./config/caddy_config:/xray_base/backend/caddy_config
+      - ./config/xray_config:/xray_base/backend/xray_config/
+      - ./config/xray_config/db:/xray_base/backend/xray_config/db
+      - ./config/xray_config/xray_core:/xray_base/backend/xray_config/xray_core
 ```
 
-## Env file example
-```dotenv
-DOMAIN_NAME=
-CLOUDFLARE_AUTH_TOKEN=
-PORT=443
+### 3. Create `.env`
+
+```env
+DOMAIN_NAME=your.domain.com
+CLOUDFLARE_AUTH_TOKEN=your_cloudflare_api_token
+PORT=8443
 ENABLE_CADDY_LOG=False
 ENABLE_WARP=True
 XRAY_VERSION=latest
-```
-### **Environment variables:**
-> `DOMAIN_NAME`
-> - Domain name to use for the DNS record.
-> - Must be a subdomain in the format of `subdomain.domain.tld`
-> - `Required`
-> 
-> `CLOUDFLARE_AUTH_TOKEN`
-> - Cloudflare API token required for DNS record and TLS certificate creation.
-> - `Required`
->
-> `PORT`
-> - Sets the port you want to use, if you change the port of the Docker container. Keep in mind that the port inside the Docker container cannot be changed.
-> - This is also used to set the right port for the VLESS link.
-> - Format: `YOUR-CUSTOM-PORT:443`
-> - Default: `443`
-> - `Required`
->
-> `XRAY_VERSION`
-> - Used to fetch the `xray-core` binary.
-> - To set a custom Xray version, use e.g., `XRAY_VERSION=25.3.6`.
-> - Default: `latest`
-> - `Required`
-> 
-> `ENABLE_CADDY_LOG`
-> - Can be set to `True` to enable the log output of Caddy.
-> - Default: `False`
-> 
-> `XRAY_UUID`
-> - Optional. If set, this value will be used as the Xray UUID.
-> - If not set (commented out or empty), the script will automatically generate a valid UUID.
-> - **Not recommended** for normal use; primarily added for testing purposes.
->
-> `XRAY_PATH`
-> - Optional. If set, defines the custom path used by Xray.
-> - Must be **lowercase** and may **only contain letters, numbers, and `-`**.
-> - If not set, the script will automatically generate a random path.
-> - **Not recommended** for normal use; primarily added for testing purposes.
-
-
-## File tree
-```
-📦xray-warp-ct
- ┣ 📂config
- ┃ ┣ 📂caddy_config
- ┃ ┣ 📂certs
- ┃ ┗ 📂xray_config
- ┃ ┃ ┗ 📂xray_core
- ┣ 📜.env
- ┗ 📜docker-compose.yaml
+SKYPORT_USERNAME=admin
+SKYPORT_PASSWORD=changeme
+# XRAY_UUID=
+# XRAY_PATH=
 ```
 
-## Spin up the container
+| Variable | Description |
+|---|---|
+| `DOMAIN_NAME` | Your domain managed by Cloudflare |
+| `CLOUDFLARE_AUTH_TOKEN` | Cloudflare auth token with `Zone.DNS Edit` and `Zone.Zone Read` permissions |
+| `PORT` | Host port to expose (maps to container port 443) |
+| `ENABLE_CADDY_LOG` | Enable Caddy access logs (`True`/`False`) |
+| `ENABLE_WARP` | Use Cloudflare WARP as outbound egress (`True`/`False`) |
+| `XRAY_VERSION` | Xray-core version to use (`latest` or a specific version tag) |
+| `SKYPORT_USERNAME` | Web UI login username |
+| `SKYPORT_PASSWORD` | Web UI login password |
+| `XRAY_UUID` | ⚠️ Optional, for testing only. Overrides the auto-generated Xray UUID. If unset, a UUID is generated automatically. |
+| `XRAY_PATH` | ⚠️ Optional, for testing only. Overrides the auto-generated Xray path. Must be lowercase and contain only letters, numbers, and `-`. If unset, a random path is generated. |
+
+### 4. Start
+
 ```bash
-sudo docker-compose up -d
+docker compose up -d
 ```
-### **NOTE:** After starting the container, you can find the VLESS link and QR code inside the `xray_config` folder.
 
-Enjoying this project? Support me with a coffee! ☕️✨ 
-Thanks for your support! 🙌 https://ko-fi.com/xia1997x⁠
+Caddy will automatically obtain a TLS certificate via Cloudflare DNS challenge on first startup. Once the container is running, fetch your dashboard URL and VLESS link from the logs:
 
-Made with ❤️ in Sweden! By xia1997x
+```bash
+docker compose logs skyport | grep -E "DASHBOARD URL|https|VLESS CONNECTION LINK|vless"
+```
+
+## Cloudflare Setup
+
+1. Your domain must use Cloudflare as its DNS provider
+2. Create an API token with `Zone.DNS Edit` and `Zone.Zone Read` permissions scoped to your domain
+3. In Cloudflare, set your domain's proxy status to **Proxied** (orange cloud) — this is what enables CDN fronting
+
+## Updating
+
+```bash
+docker compose pull
+docker compose up -d
+```
