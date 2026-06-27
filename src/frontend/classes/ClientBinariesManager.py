@@ -28,7 +28,6 @@ class ClientBinariesManager:
     async def _fetch_windows_binary_url(self, platform: Platform) -> str:
         owner, repo = self.V2RAYN_REPO
         assets = await self._get_latest_assets(owner, repo)
-        print(assets)
         asset = next(
             asset for asset in assets 
             if asset["name"] == platform.value
@@ -64,7 +63,6 @@ class ClientBinariesManager:
             ValueError: If the platform is not supported.
         """
         if platform in (Platform.WINDOWS_X86, Platform.WINDOWS_ARM64):
-            print("crash")
             return await self._fetch_windows_binary_url(platform)
 
         elif platform == Platform.ANDROID_UNIVERSAL:
