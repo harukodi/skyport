@@ -38,7 +38,7 @@ class LoginPage:
             ui.query("body").style(f"background-color: {BG_COLOR}")
 
             with ui.column().classes("absolute-center items-center gap-4"):
-                ui.label(self.title).style("font-size: 2rem; font-weight: 500; color: #D85A30; margin-bottom: 16px; margin-top: -80px")
+                ui.label(self.title).style("font-size: 2.8rem; font-weight: 500; color: #D85A30; margin-bottom: 16px; margin-top: -80px")
 
                 with ui.card().classes("items-center gap-4").style("background-color: #252523; border-radius: 16px; padding: 32px; box-shadow: none"):
                     username = ui.input(label="Username").classes("w-68").props(
