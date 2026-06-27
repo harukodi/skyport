@@ -8,7 +8,7 @@ A self-hosted, censorship-resistant proxy panel built on Xray-core with Cloudfla
 - Cloudflare WARP as outbound egress (toggleable)
 - Automatic TLS via Caddy + Cloudflare DNS
 - Web UI with QR code and VLESS link generation
-- S3/MinIO facade for GFW active probe resistance
+- S3/MinIO facade for GFW active probe resistance (WIP)
 - Single container deployment
 
 ## Requirements
