@@ -1,5 +1,4 @@
 import atexit, signal, sys
-from os import path
 from setup_cf_dns_record import setup_dns_record
 from setup_xray_core import setup_xray_core
 from classes.Services import Services
@@ -7,16 +6,18 @@ from classes.XrayConfig import XrayConfig
 from classes.CaddyConfig import CaddyConfig
 from classes.WarpHandler import WarpHandler
 from classes.InfoPrinter import InfoPrinter
+from pathlib import Path
 
 service_manager = Services()
 xray_config_manager = XrayConfig()
 warp_handler = WarpHandler()
 caddy_config_manager = CaddyConfig()
+base_dir = Path(__file__).parent.resolve()
 
 files_to_check = [
-    "./xray_config/xray_config.json",
-    "./xray_config/xray_client_qr_code.png",
-    "./xray_config/xray_client_vless_link.json"
+    base_dir / "xray_config" / "xray_config.json",
+    base_dir / "xray_config" / "xray_client_qr_code.png",
+    base_dir / "xray_config" / "xray_client_vless_link.json"
 ]
 
 def initialize():
@@ -38,7 +39,7 @@ def exit_function():
     signal.pause()
 
 def main():
-    if all(not path.exists(file) for file in files_to_check):
+    if all(not file.exists() for file in files_to_check):
         initialize()
     else:
         setup_xray_core()
