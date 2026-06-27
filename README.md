@@ -13,8 +13,10 @@ A self-hosted, censorship-resistant proxy panel built on Xray-core with Cloudfla
 
 
 ## Screenshots
- 
+### Login page
 ![Skyport login](assets/login.png)
+### Dashboard page
+![Skyport dashboard](assets/dashboard.png)
 
 ## Requirements
 
