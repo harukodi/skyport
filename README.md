@@ -32,10 +32,43 @@ touch .env
 
 ### 2. Create `docker-compose.yml`
 
+There are two available images — pick one:
+
+| Image | Description |
+|---|---|
+| `xia1997x/skyport:staging` | Full version with web UI. Requires `SKYPORT_USERNAME` and `SKYPORT_PASSWORD`. |
+| `xia1997x/skyport-headless:staging` | No web UI. `SKYPORT_USERNAME` and `SKYPORT_PASSWORD` are not needed. |
+
+**With web UI:**
+
 ```yaml
 services:
   skyport:
-    image: xia1997x/skyport:staging
+    image: xia1997x/skyport:latest
+    container_name: skyport
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - '$PORT:443'
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      - ./config/certs:/xray_base/caddy_certs
+      - ./config/caddy_config:/xray_base/backend/caddy_config
+      - ./config/xray_config:/xray_base/backend/xray_config/
+      - ./config/xray_config/db:/xray_base/backend/xray_config/db
+      - ./config/xray_config/xray_core:/xray_base/backend/xray_config/xray_core
+```
+
+**Headless (no web UI):**
+
+```yaml
+services:
+  skyport:
+    image: xia1997x/skyport-headless:latest
     container_name: skyport
     restart: always
     env_file:
