@@ -18,6 +18,10 @@ A self-hosted, censorship-resistant proxy panel built on Xray-core with Cloudfla
 - Docker and Docker Compose
 - A VPS with `NET_ADMIN` capability (required for WARP/TUN)
 
+## Notes
+
+- **WARP toggle requires `ENABLE_WARP` to be set in `.env`** — if the variable is missing or commented out, the WARP toggle in the web UI will not work. This is a known limitation.
+
 ## Installation
 
 ### 1. Create directory structure
@@ -44,7 +48,7 @@ There are two available images — pick one:
 ```yaml
 services:
   skyport:
-    image: xia1997x/skyport:latest
+    image: xia1997x/skyport:staging
     container_name: skyport
     restart: always
     env_file:
@@ -68,7 +72,7 @@ services:
 ```yaml
 services:
   skyport:
-    image: xia1997x/skyport-headless:latest
+    image: xia1997x/skyport-headless:staging
     container_name: skyport
     restart: always
     env_file:
