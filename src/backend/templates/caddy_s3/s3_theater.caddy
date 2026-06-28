@@ -1,0 +1,60 @@
+(s3_response) {
+    root * /xray_base/backend/caddy_config/s3_responses
+    header Content-Type "application/xml"
+    templates {
+        mime application/xml
+    }
+}
+
+# import the above later after the thunder storm
+
+@invalid_bucket {
+	method GET DELETE PUT POST
+	expression {path}.matches("^/[^/]*\\.\\.") || {path}.matches("^/[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}(?:/|$)") || (!{path}.matches("^/[a-z0-9][a-z0-9.-]{1,61}[a-z0-9](?:/|$)") && {path} != "/")
+}
+
+@valid_subpaths {
+	method GET DELETE PUT POST
+	path_regexp extractor ^/(?P<bucket>[^/]+)
+}
+
+@is_head {
+	method HEAD
+}
+
+
+handle @invalid_bucket {
+	root * /xray_base/caddy_config/s3_responses
+    header Content-Type "application/xml"
+    templates {
+		mime application/xml
+	}
+    respond `{{- include "s3_logic.tpl" -}}{{- include "invalid_bucket.xml" -}}` 400
+}
+
+handle @valid_subpaths {
+	root * /xray_base/caddy_config/s3_responses
+    header Content-Type "application/xml"
+    templates {
+		mime application/xml
+	}
+    respond `{{- include "s3_logic.tpl" -}}{{- include "valid_subpaths.xml" -}}` 403
+}
+
+handle @is_head {
+	root * /xray_base/caddy_config/s3_responses
+    header Content-Type "application/xml"
+    templates {
+		mime application/xml
+	}
+    respond `{{ include "s3_logic.tpl" }}` 403
+}
+
+handle {
+	root * /xray_base/caddy_config/s3_responses
+    header Content-Type "application/xml"
+    templates {
+		mime application/xml
+	}
+    respond `{{- include "s3_logic.tpl" -}}{{- include "access_denied.xml" -}}` 403
+}

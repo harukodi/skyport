@@ -1,0 +1,10 @@
+{{ include "s3_logic.tpl" -}}
+<?xml version="1.0" encoding="UTF-8"?>
+<Error>
+  <Code>AccessDenied</Code>
+  <Message>Access Denied.</Message>
+  <BucketName>{{ placeholder "http.regexp.extractor.bucket" | html }}</BucketName>
+  <Resource>{{ .OriginalReq.URL.Path | html }}</Resource>
+  <RequestId>{{ .RespHeader.Get "x-amz-request-id" }}</RequestId>
+  <HostId>{{ .RespHeader.Get "x-amz-id-2" }}</HostId>
+</Error>
