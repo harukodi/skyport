@@ -17,7 +17,10 @@ base_dir = Path(__file__).parent.resolve()
 files_to_check = [
     base_dir / "xray_config" / "xray_config.json",
     base_dir / "xray_config" / "xray_client_qr_code.png",
-    base_dir / "xray_config" / "xray_client_vless_link.json"
+    base_dir / "xray_config" / "xray_client_vless_link.json",
+    base_dir / "caddy_config" / "Caddyfile",
+    base_dir / "caddy_config" / "s3_facade.caddy",
+    base_dir / "caddy_config" / "s3_responses",
 ]
 
 def initialize():
@@ -25,7 +28,7 @@ def initialize():
     setup_xray_core()
     warp_handler.enable_warp_tunnel()
     xray_config_manager.generate_xray_config()
-    caddy_config_manager.generate_caddyfile()
+    caddy_config_manager.generate_caddy_configs()
 
 def exit_function():
     def on_exit():

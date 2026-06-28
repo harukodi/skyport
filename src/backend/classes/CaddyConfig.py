@@ -1,4 +1,4 @@
-import secrets, string, os
+import secrets, string, os, shutil
 from vars import domain_name, xray_path
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
@@ -7,6 +7,11 @@ from .DataStore import DataStore
 BASE_DIR = Path(__file__).parent.parent.resolve()
 CADDYFILE_TEMPLATE = BASE_DIR / "templates" / "caddyfile_template.j2"
 OUTPUT_CADDYFILE = BASE_DIR / "caddy_config" / "Caddyfile"
+
+S3_FACADE_CADDY_TEMPLATE = BASE_DIR / "templates" / "s3_facade_template.caddy.j2"
+OUTPUT_S3_FACADE_CADDY = BASE_DIR / "caddy_config" / "s3_facade.caddy"
+S3_RESPONSES_SRC_DIR = BASE_DIR / "templates" / "s3_responses"
+S3_RESPONSES_DST_DIR = BASE_DIR / "caddy_config" / "s3_responses"
 
 PATH_WORDS = [
     "alice", "bella", "clara", "daisy", "ellie", "flora", "grace",
@@ -49,13 +54,11 @@ PATH_ADJECTIVES = [
 
 class CaddyConfig:
     def __init__(self):
-        self.template_path = Path(CADDYFILE_TEMPLATE)
         self.env = Environment(
-            loader=FileSystemLoader(self.template_path.parent), 
+            loader=FileSystemLoader(BASE_DIR / "templates"), 
             trim_blocks=True, 
             lstrip_blocks=True
         )
-        self.template_name = self.template_path.name
         self.data_store = DataStore()
         self.frontend_path = self._generate_frontend_path()
         self.enable_skyport_ui = os.environ.get("SKYPORT_UI", "false").lower() == "true"
@@ -74,14 +77,31 @@ class CaddyConfig:
 
         return frontend_path
 
-    def generate_caddyfile(self):
-        template = self.env.get_template(self.template_name)
+    def _copy_s3_facade_responses(self):
+        shutil.copytree(S3_RESPONSES_SRC_DIR, S3_RESPONSES_DST_DIR, dirs_exist_ok=True)
+
+    def _render_s3_facade_template(self):
+        template = self.env.get_template(S3_FACADE_CADDY_TEMPLATE.name)
+        result = template.render(
+            s3_responses_dir=S3_RESPONSES_DST_DIR
+        )
+        with open(OUTPUT_S3_FACADE_CADDY, "w") as file:
+            file.write(result)
+
+    def _render_caddyfile_template(self):
+        template = self.env.get_template(CADDYFILE_TEMPLATE.name)
         result = template.render(
             domain_name=domain_name, 
             xray_path=xray_path,
             frontend_path=self.data_store.get("frontend_path"),
-            enable_skyport_ui=self.enable_skyport_ui
+            enable_skyport_ui=self.enable_skyport_ui,
+            s3_facade_config=OUTPUT_S3_FACADE_CADDY
         )
         
         with open(OUTPUT_CADDYFILE, "w") as file:
             file.write(result)
+
+    def generate_caddy_configs(self):
+        self._copy_s3_facade_responses()
+        self._render_s3_facade_template()
+        self._render_caddyfile_template()
