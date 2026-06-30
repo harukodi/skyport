@@ -1,9 +1,9 @@
-name: xray-warp-ct staging CI
+name: skyport staging CI
 
 on: workflow_dispatch
 
 jobs:
-  build-staging-image:
+  build-skyport-staging:
     uses: ./.github/workflows/build-staging.yaml
     with:
       DOCKERHUB_USERNAME: xia1997x
@@ -11,14 +11,14 @@ jobs:
     secrets:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  redeploy-staging-image:
+  redeploy-skyport-staging:
     runs-on: ubuntu-latest
     steps:
       - name: post to webhook for redeployment
         run: curl -X POST ${{ secrets.DEPLOYMENT_WEBHOOK }}
     needs: [build-staging-image]
 
-  check-xray-server-connectivity:
+  check-skyport-server-connectivity:
     uses: ./.github/workflows/xray-connectivity-check.yaml
     secrets:
       XRAY_HOST: ${{ secrets.XRAY_HOST }}

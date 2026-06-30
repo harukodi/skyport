@@ -1,4 +1,4 @@
-name: xray-warp-ct release CI
+name: skyport release CI
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-production-image:
+  build-skyport-release:
     runs-on: ubuntu-latest
     steps:
       - name: Get the current date
@@ -34,7 +34,7 @@ jobs:
           context: app/
           push: true
           tags: |
-            ${{ vars.DOCKERHUB_USERNAME }}/xray-warp:latest
-            ${{ vars.DOCKERHUB_USERNAME }}/xray-warp:${{ env.CURRENT_DATE }}
+            ${{ vars.DOCKERHUB_USERNAME }}/skyport:latest
+            ${{ vars.DOCKERHUB_USERNAME }}/skyport:${{ env.CURRENT_DATE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
