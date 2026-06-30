@@ -10,6 +10,7 @@ class WarpStatus(Enum):
 class WarpManager:
     def __init__(self):
         self.logger = Logger("WarpManager")
+        self.enable_warp_on_startup = os.environ.get("ENABLE_WARP_ON_STARTUP", "false").lower() == "true"
 
     def _register(self):
         master, slave = pty.openpty()
@@ -26,9 +27,18 @@ class WarpManager:
         
         if register_warp_result.returncode == 0:
             self.logger.info("Warp was registered successfully!")
-        else:
-            self.logger.error("Warp registration failed!")
+            return 
+        
+        reason = (
+            "Warp registration failed (possible Cloudflare outage, connectivity "
+            "issue, or rate limiting from too many container restarts)."
+        )
+
+        if self.enable_warp_on_startup:
+            self.logger.error(f"{reason} ENABLE_WARP_ON_STARTUP=true, exiting.")
             sys.exit(1)
+        else:
+            self.logger.warning(f"{reason} ENABLE_WARP_ON_STARTUP=false, continuing without Warp.")
 
     def _set_mode(self):
         set_warp_mode_result = subprocess.run(
@@ -37,7 +47,7 @@ class WarpManager:
             stderr=subprocess.DEVNULL
         )
         if set_warp_mode_result.returncode != 0:
-            self.logger.error("Failed to set Warp mode!")
+            self.logger.error("Failed to set Warp mode to proxy!")
             sys.exit(1)
 
     def connect(self):
@@ -49,17 +59,18 @@ class WarpManager:
         
         if connect_warp_result.returncode == 0:
             self.logger.info("Warp connected successfully!")
+            return True
         else:
             self.logger.error("Warp connection failed!")
-            
-    def enable_warp_tunnel(self, enable_warp: bool):
-        if not enable_warp:
-            self.logger.info("Warp is disabled. Skipping Warp connection.")
-            return
+            return False
         
+    def enable_warp_tunnel(self):        
         self._register()
         self._set_mode()
-        self.connect()
+        if self.enable_warp_on_startup:
+            if not self.connect():
+                self.logger.error("Warp connection failed on startup. Exiting.")
+                sys.exit(1)
         
     def disconnect(self):
         disconnect_warp_result = subprocess.run(

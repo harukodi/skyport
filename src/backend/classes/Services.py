@@ -1,6 +1,6 @@
-import subprocess, json, tempfile
+import subprocess, json
 from pathlib import Path
-from vars import enable_caddy_log, enable_warp
+from vars import enable_caddy_log
 
 class Services:
     def __init__(self):
