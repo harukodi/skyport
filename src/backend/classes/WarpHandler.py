@@ -1,4 +1,3 @@
-from vars import enable_warp
 from shared.warp_manager import WarpManager
 
 class WarpHandler:
