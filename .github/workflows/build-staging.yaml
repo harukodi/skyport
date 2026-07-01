@@ -14,7 +14,7 @@ on:
         required: True
 
 jobs:
-  xray-staging-image:
+  skyport-staging-image:
     runs-on: ubuntu-latest
     outputs:
       get_date: ${{ steps.date.outputs.CURRENT_DATE }}
