@@ -1,4 +1,4 @@
-name: xray-warp-ct build staging
+name: skyport build staging
 
 on:
   workflow_call:
