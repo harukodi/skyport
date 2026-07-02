@@ -63,7 +63,7 @@ class DashboardPage:
             ui.query("body").style(f"background-color: {BG_COLOR};")
             with ui.column().classes("w-full max-w-sm mx-auto px-4 py-6 gap-3"):
                 with ui.column().classes("gap-0"):
-                    ui.label("Dashboard").style(f"font-size: 26px; font-weight: 750; color: {ORANGE}")
+                    ui.label("Skyport").style(f"font-size: 26px; font-weight: 750; color: {ORANGE}")
                     ui.label(datetime.now().strftime("%a, %b %d")).style(
                         f"font-size: 13px; color: {MUTED}; font-family: monospace"
                     )
