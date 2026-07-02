@@ -11,8 +11,8 @@ ORANGE = "#ff5722"
 TEXT = "#f4f1ed"
 MUTED = "#888780"
 STATUS_ICONS = {
-    WarpStatus.CONNECTED: ("link", "deep-orange"),
-    WarpStatus.DISCONNECTED: ("link_off", MUTED),
+    WarpStatus.CONNECTED: "link",
+    WarpStatus.DISCONNECTED: "link_off",
 }
 
 
@@ -33,11 +33,11 @@ class DashboardPage:
 
                 if connected:
                     self.warp_error = False
-                    warp_status.props(f"name={STATUS_ICONS[WarpStatus.CONNECTED][0]}").props("color=green")
+                    warp_status.props(f"name={STATUS_ICONS[WarpStatus.CONNECTED]} color=deep-orange")
                 else:
                     self.warp_error = True
                     warp_switch.set_value(False)
-                    warp_status.props(f"name={STATUS_ICONS[WarpStatus.DISCONNECTED][0]}").props("color=red")
+                    warp_status.props(f"name={STATUS_ICONS[WarpStatus.DISCONNECTED]} color=red-10")
                     ui.notify(
                         message="WARP connection failed. Server IP may be blocked or WARP may be unavailable!",
                         color="deep-orange",
@@ -47,7 +47,7 @@ class DashboardPage:
             else:
                 if not self.warp_error and self.warp_manager.status() == WarpStatus.CONNECTED:
                     await run.io_bound(self.warp_manager.disconnect)
-                    warp_status.props(f"name={STATUS_ICONS[WarpStatus.DISCONNECTED][0]}").props("color=muted")
+                    warp_status.props(f"name={STATUS_ICONS[WarpStatus.DISCONNECTED]} color=grey-6")
         finally:
             warp_switch.enable()
             warp_spinner.set_visibility(False)
@@ -91,9 +91,9 @@ class DashboardPage:
 
                     is_connected = self.warp_manager.status() == WarpStatus.CONNECTED
                     with ui.row().classes("w-full justify-between items-center"):
-                        icon_name, icon_color = STATUS_ICONS[self.warp_manager.status()]
-                        warp_status = ui.icon(icon_name).classes("px-[12px]").style(
-                            f"font-size: 32px; color: {icon_color};"
+                        icon_name = STATUS_ICONS[self.warp_manager.status()]
+                        warp_status = ui.icon(icon_name).classes("px-[12px]").style("font-size: 32px;").props(
+                            "color=deep-orange" if is_connected else "color=grey-6"
                         )
                         warp_spinner = ui.spinner("dots", color="deep-orange").classes("w-14 h-4 px-[12px]")
                         warp_spinner.set_visibility(False)
