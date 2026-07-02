@@ -4,7 +4,6 @@ from datetime import datetime
 from .ConfigLoader import ConfigLoader
 from shared.warp_manager import WarpManager, WarpStatus
 
-STARTED = datetime(2026, 5, 12, 0, 0, 0)
 CARD_STYLE = "background-color: #252523; border-radius: 16px;"
 BG_COLOR = "#1a1a18"
 ORANGE = "#ff5722"
