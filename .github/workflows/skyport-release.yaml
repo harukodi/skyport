@@ -36,8 +36,8 @@ jobs:
           target: backend
           push: true
           tags: |
-            ${{ inputs.DOCKERHUB_USERNAME }}/${{ inputs.DOCKERHUB_REGISTRY }}-headless:latest
-            ${{ inputs.DOCKERHUB_USERNAME }}/${{ inputs.DOCKERHUB_REGISTRY }}-headless:${{ steps.date.outputs.CURRENT_DATE }}
+            ${{ inputs.DOCKERHUB_USERNAME }}/skyport-headless:latest
+            ${{ inputs.DOCKERHUB_USERNAME }}/skyport-headless:${{ steps.date.outputs.CURRENT_DATE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
