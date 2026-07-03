@@ -1,5 +1,5 @@
 # Skyport
-A self-hosted, censorship-resistant proxy panel built on Xray-core with Cloudflare CDN fronting and WARP egress — built to make bypassing internet censorship simple and reliable.
+A self-hosted, censorship-resistant proxy panel built on Xray-core with Cloudflare CDN fronting and WARP egress. Built to make bypassing internet censorship simple and reliable.
 
 ## Features
 - VLESS+XHTTP tunneled through Cloudflare CDN
