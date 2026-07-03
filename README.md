@@ -37,7 +37,7 @@ If you want to to reinstall skyport, run the following command in full (make sur
 ```bash
 read -p "This will delete existing config directories. Continue? (y/N) " confirm && \
 [[ "$confirm" == [yY] ]] && \
-cd skyport && \
+{ [[ "$(basename "$PWD")" == "skyport" ]] || cd skyport; } && \
 docker compose down && \
 rm -rf ./config/caddy_config ./config/xray_config && \
 mkdir -p ./config/caddy_config ./config/xray_config/{xray_core,db} && \
