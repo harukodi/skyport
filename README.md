@@ -112,7 +112,7 @@ services:
 
 ### 3. Create `.env`
 ```env
-DOMAIN_NAME=
+DOMAIN_NAME=your-subdomain.domain.tld
 CLOUDFLARE_AUTH_TOKEN=cloudflare_token
 PORT=443
 ENABLE_CADDY_LOG=False
