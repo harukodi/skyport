@@ -27,14 +27,29 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build and push
+
+      - name: Build and push skyport-headless backend image
         uses: docker/build-push-action@v6
         with:
-          platforms: linux/amd64,linux/arm64
-          context: app/
+          platforms: linux/amd64
+          context: src/
+          target: backend
           push: true
           tags: |
-            ${{ vars.DOCKERHUB_USERNAME }}/skyport:latest
-            ${{ vars.DOCKERHUB_USERNAME }}/skyport:${{ env.CURRENT_DATE }}
+            ${{ inputs.DOCKERHUB_USERNAME }}/${{ inputs.DOCKERHUB_REGISTRY }}-headless:latest
+            ${{ inputs.DOCKERHUB_USERNAME }}/${{ inputs.DOCKERHUB_REGISTRY }}-headless:${{ steps.date.outputs.CURRENT_DATE }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push skyport backend + frontend image
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64
+          context: src/
+          target: frontend
+          push: true
+          tags: |
+            ${{ inputs.DOCKERHUB_USERNAME }}/${{ inputs.DOCKERHUB_REGISTRY }}:latest
+            ${{ inputs.DOCKERHUB_USERNAME }}/${{ inputs.DOCKERHUB_REGISTRY }}:${{ steps.date.outputs.CURRENT_DATE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
