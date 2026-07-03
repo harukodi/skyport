@@ -36,8 +36,8 @@ jobs:
           target: backend
           push: true
           tags: |
-            ${{ inputs.DOCKERHUB_USERNAME }}/skyport-headless:latest
-            ${{ inputs.DOCKERHUB_USERNAME }}/skyport-headless:${{ steps.date.outputs.CURRENT_DATE }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/skyport-headless:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/skyport-headless:${{ steps.date.outputs.CURRENT_DATE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -49,7 +49,7 @@ jobs:
           target: frontend
           push: true
           tags: |
-            ${{ inputs.DOCKERHUB_USERNAME }}/skyport:latest
-            ${{ inputs.DOCKERHUB_USERNAME }}/skyport:${{ steps.date.outputs.CURRENT_DATE }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/skyport:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/skyport:${{ steps.date.outputs.CURRENT_DATE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
