@@ -60,8 +60,8 @@ class CaddyConfig:
             lstrip_blocks=True
         )
         self.data_store = DataStore()
-        self.frontend_path = self._generate_frontend_path()
         self.enable_skyport_ui = os.environ.get("SKYPORT_UI", "false").lower() == "true"
+        self.frontend_path = os.environ.get("FRONTEND_PATH", None)
 
     def _generate_frontend_path(self):
         def _generate_salt(length: int):
@@ -73,9 +73,17 @@ class CaddyConfig:
         verb = secrets.choice(PATH_VERBS)
         adjective = secrets.choice(PATH_ADJECTIVES)
         frontend_path = f"{adjective}-{words}-{verb}-{_generate_salt(8)}"
-        self.data_store.insert("frontend_path", frontend_path)
-
         return frontend_path
+
+    def _resolve_frontend_path(self):
+        if self.enable_skyport_ui:
+            if self.frontend_path:
+                frontend_path = self.frontend_path
+            else:
+                frontend_path = self._generate_frontend_path()
+        
+            self.data_store.insert("frontend_path", frontend_path)
+            return frontend_path
 
     def _copy_s3_facade_responses(self):
         shutil.copytree(S3_RESPONSES_SRC_DIR, S3_RESPONSES_DST_DIR, dirs_exist_ok=True)
@@ -93,7 +101,7 @@ class CaddyConfig:
         result = template.render(
             domain_name=domain_name, 
             xray_path=xray_path,
-            frontend_path=self.data_store.get("frontend_path"),
+            frontend_path=self._resolve_frontend_path(),
             enable_skyport_ui=self.enable_skyport_ui,
             s3_facade_config=OUTPUT_S3_FACADE_CADDY
         )

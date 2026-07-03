@@ -1,43 +1,56 @@
-from nicegui import ui
+from nicegui import ui, run
 from classes.Auth import Auth
 from datetime import datetime
 from .ConfigLoader import ConfigLoader
 from shared.warp_manager import WarpManager, WarpStatus
 
-STARTED = datetime(2026, 5, 12, 0, 0, 0)
 CARD_STYLE = "background-color: #252523; border-radius: 16px;"
 BG_COLOR = "#1a1a18"
 ORANGE = "#ff5722"
 TEXT = "#f4f1ed"
 MUTED = "#888780"
+STATUS_ICONS = {
+    WarpStatus.CONNECTED: "link",
+    WarpStatus.DISCONNECTED: "link_off",
+}
+
 
 class DashboardPage:
     def __init__(self):
         self.warp_manager = WarpManager()
         self.warp_error = False
     
-    def on_warp_toggle(self, e, warp_status, warp_switch) -> None:
-        if e.value:
-            self.warp_manager.connect()
-            connected = self.warp_manager.wait_for_connection()
-            if connected:
-                warp_status.set_text(WarpStatus.CONNECTED.value)
-                warp_status.style(f"font-size: 18px; font-weight: 500; color: {TEXT}")
-            else:
-                self.warp_error = True
-                warp_switch.set_value(False)
-                warp_status.set_text(WarpStatus.DISCONNECTED.value)
-                warp_status.style(f"font-size: 18px; font-weight: 500; color: {MUTED}")
-                ui.notify(
+    async def on_warp_toggle(self, e, warp_status, warp_switch, warp_spinner) -> None:
+        warp_status.set_visibility(False)
+        warp_spinner.set_visibility(True)
+        warp_switch.disable()
+
+        try:
+            if e.value:
+                await run.io_bound(self.warp_manager.connect)
+                connected = await run.io_bound(self.warp_manager.wait_for_connection)
+
+                if connected:
+                    self.warp_error = False
+                    warp_status.props(f"name={STATUS_ICONS[WarpStatus.CONNECTED]} color=deep-orange")
+                else:
+                    self.warp_error = True
+                    warp_switch.set_value(False)
+                    warp_status.props(f"name={STATUS_ICONS[WarpStatus.DISCONNECTED]} color=red-10")
+                    ui.notify(
                         message="WARP connection failed. Server IP may be blocked or WARP may be unavailable!",
                         color="deep-orange",
-                        type="warning"
-                )
-        else:
-            if not self.warp_error and self.warp_manager.status() == WarpStatus.CONNECTED:
-                self.warp_manager.disconnect()
-            warp_status.set_text(WarpStatus.DISCONNECTED.value)
-            warp_status.style(f"font-size: 18px; font-weight: 500; color: {MUTED}")
+                        type="warning",
+                        icon="cloud_off"
+                    )
+            else:
+                if not self.warp_error and self.warp_manager.status() == WarpStatus.CONNECTED:
+                    await run.io_bound(self.warp_manager.disconnect)
+                    warp_status.props(f"name={STATUS_ICONS[WarpStatus.DISCONNECTED]} color=grey-6")
+        finally:
+            warp_switch.enable()
+            warp_spinner.set_visibility(False)
+            warp_status.set_visibility(True)
 
     def build(self) -> None:
         self.xray_client_qr_code_base64 = ConfigLoader.get_xray_qrcode()
@@ -49,7 +62,7 @@ class DashboardPage:
             ui.query("body").style(f"background-color: {BG_COLOR};")
             with ui.column().classes("w-full max-w-sm mx-auto px-4 py-6 gap-3"):
                 with ui.column().classes("gap-0"):
-                    ui.label("Dashboard").style(f"font-size: 26px; font-weight: 750; color: {ORANGE}")
+                    ui.label("Skyport").style(f"font-size: 26px; font-weight: 750; color: {ORANGE}")
                     ui.label(datetime.now().strftime("%a, %b %d")).style(
                         f"font-size: 13px; color: {MUTED}; font-family: monospace"
                     )
@@ -68,21 +81,26 @@ class DashboardPage:
 
 
                 # WARP container
-                with ui.card().classes("w-full").style(CARD_STYLE):
-                    with ui.row().classes("items-center gap-2 mb-4"):
+                with ui.card().classes("w-full h-[110px] overflow-hidden").style(CARD_STYLE):
+                    with ui.row().classes("items-center gap-2"):
                         ui.icon("shield").style(f"color: {ORANGE}; font-size: 16px")
                         ui.label("WARP").style(
                             f"font-size: 12px; font-weight: 750; letter-spacing: 0.08em; color: {ORANGE}"
                         )
 
                     is_connected = self.warp_manager.status() == WarpStatus.CONNECTED
-                    with ui.row().classes("w-full items-center justify-between"):
-                        warp_status = ui.label(self.warp_manager.status().value).style(
-                            f"font-size: 18px; font-weight: 500; color: {TEXT if is_connected else MUTED}"
+                    with ui.row().classes("w-full justify-between items-center"):
+                        icon_name = STATUS_ICONS[self.warp_manager.status()]
+                        warp_status = ui.icon(icon_name).classes("px-[12px]").style("font-size: 32px;").props(
+                            "color=deep-orange" if is_connected else "color=grey-6"
                         )
-                        warp_switch = ui.switch(value=True if is_connected else False).props("color=deep-orange")
+                        warp_spinner = ui.spinner("dots", color="deep-orange").classes("w-14 h-4 px-[12px]")
+                        warp_spinner.set_visibility(False)
+                        warp_switch = ui.switch(value=is_connected).props("color=deep-orange")
 
-                    warp_switch.on_value_change(lambda e: self.on_warp_toggle(e, warp_status, warp_switch))
+                    warp_switch.on_value_change(
+                        lambda e: self.on_warp_toggle(e, warp_status, warp_switch, warp_spinner)
+                    )
 
                 # Logout
                 ui.button("Log out", icon="logout", on_click=lambda: Auth.logout()).classes(
