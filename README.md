@@ -112,7 +112,7 @@ services:
 
 ### 3. Create `.env`
 ```env
-DOMAIN_NAME=your-subdomain.domain.tld
+DOMAIN_NAME=your-subdomain.example.com
 CLOUDFLARE_AUTH_TOKEN=cloudflare_token
 PORT=443
 ENABLE_CADDY_LOG=False
@@ -167,3 +167,10 @@ docker compose logs skyport | grep -E "DASHBOARD URL|https|VLESS CONNECTION LINK
 docker compose pull
 docker compose up -d
 ```
+## Support
+
+If Skyport has been useful to you, consider supporting its continued development. Every bit of support helps me dedicate more time to new features, bug fixes, and improvements.
+
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/xia1997x)
+
+Thank you! 🙏
