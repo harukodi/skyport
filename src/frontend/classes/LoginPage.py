@@ -11,22 +11,36 @@ class LoginPage:
         self.redirect_to = redirect_to
 
     def _build_download_section(self) -> None:
-        # Removes the box shadow from the dropdown menu
         ui.add_css('''
             @layer overrides {
                 .q-menu--dark {
                     box-shadow: none !important;
-                    border-radius: 0.5rem !important;
+                    border-radius: 4px; !important;
                     margin-top: 4px !important;
+                    max-height: 210px !important;
+                    overflow-y: auto !important;
+                }
+                .q-menu--dark::-webkit-scrollbar {
+                    width: 4px;
+                }
+                .q-menu--dark::-webkit-scrollbar-thumb {
+                    background-color: #D85A30;
+                    border-radius: 0 4px 4px 0;
                 }
             }
         ''')
         with ui.column().classes("items-center w-68"):
-            with ui.dropdown_button("Get clients", icon="devices").classes("w-68 rounded-lg py-2").props("flat color=deep-orange dark dropdown-icon=unfold_more no-icon-animation").style("border: 0.5px solid #D85A30"):
+            with ui.dropdown_button("Get clients", icon="devices").classes(
+                "w-68 rounded-lg py-2"
+            ).props(
+                "flat color=deep-orange dark dropdown-icon=unfold_more no-icon-animation"
+            ).style("border: 0.5px solid #D85A30"):
                 for platform in Platform:
                     ui.item(
                         platform.name.replace("_", " ").lower().capitalize(),
-                        on_click=lambda p=platform: ui.navigate.to(f"/client/dl/{p.name.lower()}", new_tab=False)
+                        on_click=lambda p=platform: ui.navigate.to(
+                            f"/client/dl/{p.name.lower()}", new_tab=False
+                        ),
                     ).style("background-color: #252523; color: #D85A30")
 
     def build(self) -> None:
