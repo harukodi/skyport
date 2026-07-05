@@ -1,4 +1,4 @@
-import httpx, asyncio
+import httpx
 from shared.logger import Logger
 from enum import Enum
 
@@ -6,8 +6,10 @@ class Platform(str, Enum):
     WINDOWS_X64 = "v2rayN-windows-64.zip"
     WINDOWS_ARM64 = "v2rayN-windows-arm64.zip"
     ANDROID_UNIVERSAL = "universal.apk"
-    LINUX_X64 = "v2rayN-linux-64.zip"
-    LINUX_ARM64 = "v2rayN-linux-arm64.zip"
+    LINUX_X64 = "v2rayN-linux-64.deb"
+    LINUX_ARM64 = "v2rayN-linux-arm64.deb"
+    MACOS_X64 = "v2rayN-macos-64.dmg"
+    MACOS_ARM64 = "v2rayN-macos-arm64.dmg"
 
 class ClientBinariesManager:
     V2RAYN_REPO = ("2dust", "v2rayn")
@@ -52,6 +54,15 @@ class ClientBinariesManager:
         )
         return asset["browser_download_url"]
     
+    async def _fetch_macos_binary_url(self, platform: Platform) -> str:
+        owner, repo = self.V2RAYN_REPO
+        assets = await self._get_latest_assets(owner, repo)
+        asset = next(
+            asset for asset in assets
+            if asset["name"] == platform.value
+        )
+        return asset["browser_download_url"]
+
     async def get_client_binary_url(self, platform: Platform) -> str:
         """
         Fetches the GitHub release download URL for the specified client platform.
@@ -65,11 +76,13 @@ class ClientBinariesManager:
         if platform in (Platform.WINDOWS_X64, Platform.WINDOWS_ARM64):
             return await self._fetch_windows_binary_url(platform)
 
-        elif platform == Platform.ANDROID_UNIVERSAL:
-            return await self._fetch_android_binary_url(platform)
-
         elif platform in (Platform.LINUX_X64, Platform.LINUX_ARM64):
             return await self._fetch_linux_binary_url(platform)
-
+        
+        elif platform in (Platform.MACOS_X64, Platform.MACOS_ARM64):
+            return await self._fetch_macos_binary_url(platform)
+        
+        elif platform == Platform.ANDROID_UNIVERSAL:
+            return await self._fetch_android_binary_url(platform)
         else:
             raise ValueError("Unsupported platform")
