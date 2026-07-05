@@ -3,10 +3,10 @@ from shared.logger import Logger
 from enum import Enum
 
 class Platform(str, Enum):
-    WINDOWS_X86 = "v2rayN-windows-64.zip"
+    WINDOWS_X64 = "v2rayN-windows-64.zip"
     WINDOWS_ARM64 = "v2rayN-windows-arm64.zip"
     ANDROID_UNIVERSAL = "universal.apk"
-    LINUX_X86 = "v2rayN-linux-64.zip"
+    LINUX_X64 = "v2rayN-linux-64.zip"
     LINUX_ARM64 = "v2rayN-linux-arm64.zip"
 
 class ClientBinariesManager:
@@ -62,13 +62,13 @@ class ClientBinariesManager:
         Raises:
             ValueError: If the platform is not supported.
         """
-        if platform in (Platform.WINDOWS_X86, Platform.WINDOWS_ARM64):
+        if platform in (Platform.WINDOWS_X64, Platform.WINDOWS_ARM64):
             return await self._fetch_windows_binary_url(platform)
 
         elif platform == Platform.ANDROID_UNIVERSAL:
             return await self._fetch_android_binary_url(platform)
 
-        elif platform in (Platform.LINUX_X86, Platform.LINUX_ARM64):
+        elif platform in (Platform.LINUX_X64, Platform.LINUX_ARM64):
             return await self._fetch_linux_binary_url(platform)
 
         else:
