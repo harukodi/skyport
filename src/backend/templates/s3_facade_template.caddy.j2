@@ -29,16 +29,17 @@
 
     handle @invalid_bucket {
         import s3_response
-        respond `{{- include "s3_logic.tpl" -}}{{- include "invalid_bucket.xml" -}}` 400
+        respond `{{- include "invalid_bucket.xml" -}}` 400
     }
 
     handle @invalid_bucket_head {
+        import s3_response
         respond `{{ include "s3_logic.tpl" }}` 400
     }
 
     handle @valid_subpaths {
         import s3_response
-        respond `{{- include "s3_logic.tpl" -}}{{- include "valid_subpaths.xml" -}}` 403
+        respond `{{- include "valid_subpaths.xml" -}}` 403
     }
 
     handle @is_head {
@@ -48,7 +49,7 @@
 
     handle {
     	import s3_response
-        respond `{{- include "s3_logic.tpl" -}}{{- include "access_denied.xml" -}}` 403
+        respond `{{- include "access_denied.xml" -}}` 403
     }
 }
 {% endraw %}
