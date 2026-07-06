@@ -166,6 +166,8 @@ src/backend/caddy_config/*
 !src/backend/caddy_config/.gitkeep
 src/backend/xray_config/*
 src/backend/xray_config/db/data_store.db
+src/backend/xray_config/db/data_store.db-shm
+src/backend/xray_config/db/data_store.db-wal
 !src/backend/xray_config/.gitkeep
 !src/backend/xray_config/db
 !src/backend/xray_config/xray_core/.gitkeep
