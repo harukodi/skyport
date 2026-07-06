@@ -15,6 +15,8 @@ A self-hosted, censorship-resistant proxy panel built on Xray-core with Cloudfla
 ![Skyport login](assets/login.png)
 ### Dashboard page
 ![Skyport dashboard](assets/dashboard.png)
+### 404 page
+![Skyport 404](assets/404.png)
 
 ## Requirements
 - A domain managed by Cloudflare
