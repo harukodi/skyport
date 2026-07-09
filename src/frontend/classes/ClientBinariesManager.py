@@ -5,7 +5,7 @@ from enum import Enum
 class Platform(str, Enum):
     WINDOWS_X64 = "v2rayN-windows-64.zip"
     WINDOWS_ARM64 = "v2rayN-windows-arm64.zip"
-    ANDROID_UNIVERSAL = "universal.apk"
+    ANDROID_ARM64 = "arm64-v8a.apk"
     LINUX_X64 = "v2rayN-linux-64.deb"
     LINUX_ARM64 = "v2rayN-linux-arm64.deb"
     MACOS_X64 = "v2rayN-macos-64.dmg"
@@ -82,7 +82,7 @@ class ClientBinariesManager:
         elif platform in (Platform.MACOS_X64, Platform.MACOS_ARM64):
             return await self._fetch_macos_binary_url(platform)
         
-        elif platform == Platform.ANDROID_UNIVERSAL:
+        elif platform == Platform.ANDROID_ARM64:
             return await self._fetch_android_binary_url(platform)
         else:
             raise ValueError("Unsupported platform")

@@ -31,7 +31,7 @@ class BinaryProxer:
         Streams a client binary from GitHub to the user without saving to disk.
         This endpoint is unauthenticated and accessible via the frontend login page.
         Args:
-            platform: Platform identifier, e.g. 'windows_x86' or 'android_universal'.
+            platform: Platform identifier, e.g. 'windows_x64' or 'android_arm64'.
         Returns:
             StreamingResponse with the binary as application/octet-stream.
         Raises:
